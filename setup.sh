@@ -74,15 +74,16 @@ prompt_install() {
 }
 
 # Update system first
-if prompt_install "Update system packages?"; then
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
+
+if prompt_install "Install proprietary codecs and fonts? (Installing these additional components allows you to play various multimedia formats and enhance font rendering.)"; then
     echo_info "Updating system packages..."
-    sudo apt update && sudo apt upgrade -y
 else
     echo_warn "Skipping system update"
 fi
 
 # Install essential build tools
-if prompt_install "Install essential build tools (git, curl, wget, vim, etc.)?"; then
+if prompt_install "Install essential dev tools (git, curl, wget, vim, etc.)?"; then
     echo_info "Installing build essentials and common tools..."
     sudo apt install -y \
         build-essential \
@@ -137,6 +138,30 @@ if prompt_install "Install modern CLI tools (bat, fzf, ripgrep, fd, tldr)?"; the
     ln -sf /usr/bin/fdfind ~/.local/bin/fd 2>/dev/null || true
 else
     echo_warn "Skipping modern CLI tools"
+fi
+
+# Install essential developer utilities
+if prompt_install "Install essential developer utilities (jq, tree, httpie)?"; then
+    echo_info "Installing developer utilities..."
+    sudo apt install -y \
+        jq \
+        tree \
+        httpie
+else
+    echo_warn "Skipping developer utilities"
+fi
+
+# Install archive and compression tools
+if prompt_install "Install archive tools (zip, unzip, 7zip, rar)?"; then
+    echo_info "Installing archive tools..."
+    sudo apt install -y \
+        zip \
+        unzip \
+        p7zip-full \
+        p7zip-rar \
+        unrar
+else
+    echo_warn "Skipping archive tools"
 fi
 
 # Install Docker
@@ -224,6 +249,35 @@ else
     echo_warn "Skipping Rust"
 fi
 
+# Install Go
+if prompt_install "Install Go (Golang)?"; then
+    echo_info "Installing Go..."
+    if ! command -v go &> /dev/null; then
+        GO_VERSION="1.21.5"
+        wget -O go.tar.gz "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz"
+        sudo rm -rf /usr/local/go
+        sudo tar -C /usr/local -xzf go.tar.gz
+        rm go.tar.gz
+
+        # Add Go to PATH
+        cat >> ~/.bashrc << 'EOF'
+
+# Go configuration
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+EOF
+        export PATH=$PATH:/usr/local/go/bin
+        export GOPATH=$HOME/go
+        export PATH=$PATH:$GOPATH/bin
+        echo_info "Go installed. Version: $(go version)"
+    else
+        echo_info "Go already installed"
+    fi
+else
+    echo_warn "Skipping Go"
+fi
+
 # Install VS Code
 if prompt_install "Install Visual Studio Code?"; then
     echo_info "Installing Visual Studio Code..."
@@ -259,6 +313,53 @@ if prompt_install "Install Alacritty (GPU-accelerated terminal)?"; then
     sudo apt install -y alacritty
 else
     echo_warn "Skipping Alacritty"
+fi
+
+# Install developer fonts
+if prompt_install "Install developer fonts (JetBrains Mono, Fira Code, Cascadia Code)?"; then
+    echo_info "Installing developer fonts..."
+
+    # Create fonts directory
+    mkdir -p ~/.local/share/fonts
+
+    # Install JetBrains Mono
+    if [ ! -d ~/.local/share/fonts/JetBrainsMono ]; then
+        echo_info "Installing JetBrains Mono..."
+        wget -O jetbrains.zip https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip
+        unzip -q jetbrains.zip -d ~/.local/share/fonts/JetBrainsMono
+        rm jetbrains.zip
+    fi
+
+    # Install Fira Code
+    if [ ! -d ~/.local/share/fonts/FiraCode ]; then
+        echo_info "Installing Fira Code..."
+        wget -O firacode.zip https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip
+        unzip -q firacode.zip -d ~/.local/share/fonts/FiraCode
+        rm firacode.zip
+    fi
+
+    # Install Cascadia Code
+    if [ ! -d ~/.local/share/fonts/CascadiaCode ]; then
+        echo_info "Installing Cascadia Code..."
+        wget -O cascadia.zip https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip
+        unzip -q cascadia.zip -d ~/.local/share/fonts/CascadiaCode
+        rm cascadia.zip
+    fi
+
+    # Refresh font cache
+    fc-cache -f -v
+    echo_info "Developer fonts installed successfully"
+else
+    echo_warn "Skipping developer fonts"
+fi
+
+# Install Flameshot (screenshot tool)
+if prompt_install "Install Flameshot (advanced screenshot tool)?"; then
+    echo_info "Installing Flameshot..."
+    sudo apt install -y flameshot
+    echo_info "Flameshot installed. Use 'flameshot gui' or set a keyboard shortcut"
+else
+    echo_warn "Skipping Flameshot"
 fi
 
 # Configure Oh My Zsh (optional but recommended)
@@ -520,3 +621,34 @@ echo "  - VS Code: Run 'code' from terminal"
 echo "  - Zed: Run 'zed' from terminal"
 echo ""
 echo_warn "IMPORTANT: Log out and back in for Docker group and shell changes to take effect!"
+echo ""
+
+# Install man page
+if prompt_install "Install punk_os man page (allows running 'man punk_os')?"; then
+    echo_info "Installing punk_os man page..."
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    MAN_SOURCE="${SCRIPT_DIR}/punk_os.1"
+
+    if [ -f "$MAN_SOURCE" ]; then
+        # Determine installation directory
+        if [ -d "/usr/local/man/man1" ] || sudo mkdir -p /usr/local/man/man1 2>/dev/null; then
+            MAN_DIR="/usr/local/man/man1"
+        else
+            MAN_DIR="/usr/share/man/man1"
+            sudo mkdir -p "$MAN_DIR" 2>/dev/null || true
+        fi
+
+        # Install man page
+        sudo cp "$MAN_SOURCE" "$MAN_DIR/punk_os.1"
+        sudo chmod 644 "$MAN_DIR/punk_os.1"
+
+        # Update man database
+        if command -v mandb >/dev/null 2>&1; then
+            sudo mandb -q 2>/dev/null || true
+        fi
+
+        echo_info "Man page installed! You can now run: man punk_os"
+    else
+        echo_warn "Man page source file not found: $MAN_SOURCE"
+    fi
+fi
