@@ -419,16 +419,6 @@ else
     echo_warn "Skipping Projects directory"
 fi
 
-# Install GNOME extensions (requires manual enabling)
-if prompt_install "Install GNOME Shell Extensions (Caffeine, System Monitor)?"; then
-    echo_info "Installing GNOME Shell Extensions..."
-    sudo apt install -y \
-        gnome-shell-extension-caffeine \
-        gnome-shell-extension-system-monitor
-else
-    echo_warn "Skipping GNOME extensions"
-fi
-
 # Install Spotify
 if prompt_install "Install Spotify?"; then
     echo_info "Installing Spotify..."
