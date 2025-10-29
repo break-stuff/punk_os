@@ -1,10 +1,12 @@
 # Punk_OS Setup Script
 
-A comprehensive development environment setup script for Pop!_OS and Ubuntu-based distributions that transforms your fresh installation into a fully-equipped development machine.
+A comprehensive development environment setup script for Ubuntu and Ubuntu-based distributions (including Pop!_OS, Linux Mint, Elementary OS, and others) that transforms your fresh installation into a fully-equipped development machine.
 
 ## Overview
 
-The `setup.sh` script is an interactive installer that helps you quickly set up a complete development environment on Pop!_OS. It includes development tools, programming languages, IDEs, productivity applications, and system optimizations commonly needed by developers.
+The `setup.sh` script is an interactive installer that helps you quickly set up a complete development environment on Ubuntu-based systems. It includes development tools, programming languages, IDEs, productivity applications, and system optimizations commonly needed by developers.
+
+**Compatibility**: Works on Ubuntu 20.04+, Pop!_OS, Linux Mint, Elementary OS, Zorin OS, and other Ubuntu-based distributions that use the apt package manager.
 
 ## Quick Start
 
@@ -44,6 +46,8 @@ The man page provides instant offline access to:
 - CLI tool examples (jq, ripgrep, fzf, etc.)
 - Troubleshooting guides
 - Quick reference commands
+
+**Note**: Works on any Ubuntu-based distribution. The script auto-detects your system and adjusts accordingly.
 
 ## Available Tools
 
@@ -390,7 +394,8 @@ The script uses `set -e` to exit on errors. If it fails:
 
 ## Requirements
 
-- **OS**: Pop!_OS 22.04+ or Ubuntu 22.04+ based distributions
+- **OS**: Ubuntu 20.04+ or any Ubuntu-based distribution (Pop!_OS, Linux Mint, Elementary OS, Zorin OS, etc.)
+- **Package Manager**: apt (Debian/Ubuntu package manager)
 - **Network**: Internet connection for downloading packages
 - **Storage**: At least 5GB free space for all packages
 - **User**: Non-root user with sudo privileges
@@ -403,6 +408,7 @@ This script focuses on development tools and doesn't include:
 - Specialized design software (GIMP, Blender, etc.)
 - Hardware-specific drivers
 - Custom kernel modifications
+- Distribution-specific customizations (uses standard Ubuntu packages)
 
 ## Contributing
 
@@ -438,4 +444,6 @@ When running with `-y` flag, the following software is installed:
 **Communication:** Discord, Slack, Zoom, Spotify  
 **Media:** VLC, OBS Studio  
 **Productivity:** Obsidian, Chromium  
-**Utilities:** Archive tools (zip, 7z, rar), GNOME extensions
+**Utilities:** Archive tools (zip, 7z, rar), GNOME extensions (on GNOME-based systems)
+
+**Note**: Some packages may have slightly different names or installation methods depending on your specific Ubuntu-based distribution. The script handles these differences automatically.

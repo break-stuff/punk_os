@@ -2,6 +2,7 @@
 
 # Check Installed Software Script
 # Generates a comprehensive reference manual of installed development tools
+# Compatible with Ubuntu 20.04+ and all Ubuntu-based distributions
 # Usage: ./check-installed.sh [output-file]
 
 OUTPUT_FILE="${1:-INSTALLED.md}"
@@ -47,7 +48,8 @@ This document provides a comprehensive reference of all development tools, appli
 
 **Generated:** $(date "+%Y-%m-%d %H:%M:%S")
 **Hostname:** $(hostname)
-**OS:** $(lsb_release -d | cut -f2)
+**Distribution:** $(lsb_release -is 2>/dev/null || echo "Unknown")
+**OS Version:** $(lsb_release -ds 2>/dev/null || echo "Unknown")
 
 ---
 
@@ -76,12 +78,14 @@ EOF
 {
     echo "| Item | Value |"
     echo "|------|-------|"
-    echo "| OS | $(lsb_release -d | cut -f2) |"
+    echo "| Distribution | $(lsb_release -is 2>/dev/null || echo "Unknown") |"
+    echo "| OS Version | $(lsb_release -ds 2>/dev/null || echo "Unknown") |"
     echo "| Kernel | $(uname -r) |"
     echo "| Architecture | $(uname -m) |"
     echo "| Hostname | $(hostname) |"
     echo "| User | $USER |"
     echo "| Home Directory | $HOME |"
+    echo "| Package Manager | apt ($(apt --version 2>/dev/null | head -n1 || echo "apt available")) |"
     echo ""
 } >> "$OUTPUT_FILE"
 
@@ -732,6 +736,7 @@ echo "" >> "$OUTPUT_FILE"
 echo ""
 echo_info "✅ Reference manual generated successfully!"
 echo_info "📄 Output saved to: $OUTPUT_FILE"
+echo_info "System: $(lsb_release -is 2>/dev/null || echo "Ubuntu-based") $(lsb_release -rs 2>/dev/null || echo "")"
 echo_info ""
 echo_info "You can view it with:"
 echo_info "  cat $OUTPUT_FILE"

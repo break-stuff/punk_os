@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Pop!_OS Ultimate Dev Box Setup Script
+# Punk_OS - Ubuntu Development Environment Setup Script
+# Compatible with Ubuntu 20.04+, Pop!_OS, Linux Mint, Elementary OS, and other Ubuntu-based distributions
 # Run with: bash setup.sh [-y]
 # Options:
 #   -y    Accept all prompts automatically (non-interactive mode)
@@ -54,10 +55,39 @@ if [[ $EUID -eq 0 ]]; then
    exit 1
 fi
 
-echo_info "Starting Pop!_OS Dev Box Setup..."
+# Detect distribution
+DISTRO=$(lsb_release -is 2>/dev/null || echo "Ubuntu")
+DISTRO_VERSION=$(lsb_release -rs 2>/dev/null || echo "unknown")
+
+echo_info "Starting Punk_OS Development Environment Setup..."
+echo_info "Detected: $DISTRO $DISTRO_VERSION"
 if [[ "$AUTO_YES" == true ]]; then
     echo_info "Running in non-interactive mode (auto-accepting all prompts)"
 fi
+
+# Check if running on a Debian/Ubuntu-based system
+if ! command -v apt >/dev/null 2>&1; then
+    echo_error "This script requires apt package manager (Debian/Ubuntu-based system)"
+    exit 1
+fi
+
+# Verify minimum Ubuntu version (20.04+)
+if [[ "$DISTRO" == "Ubuntu" ]] || [[ "$DISTRO" == "Pop" ]]; then
+    MAJOR_VERSION=$(echo "$DISTRO_VERSION" | cut -d. -f1)
+    if [[ "$MAJOR_VERSION" -lt 20 ]]; then
+        echo_warn "This script is designed for Ubuntu 20.04+. Your version: $DISTRO_VERSION"
+        echo_warn "Some packages may not be available or may require different installation methods."
+        if [[ "$AUTO_YES" != true ]]; then
+            read -p "Continue anyway? (y/n) " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo_info "Installation cancelled."
+                exit 0
+            fi
+        fi
+    fi
+fi
+
 echo_info "You may be prompted for your password for sudo commands"
 echo ""
 
@@ -74,10 +104,9 @@ prompt_install() {
 }
 
 # Update system first
-sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
-
-if prompt_install "Install proprietary codecs and fonts? (Installing these additional components allows you to play various multimedia formats and enhance font rendering.)"; then
+if prompt_install "Update system packages?"; then
     echo_info "Updating system packages..."
+    sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 else
     echo_warn "Skipping system update"
 fi
@@ -382,35 +411,6 @@ else
     echo_warn "Skipping Oh My Zsh"
 fi
 
-# Add useful shell configurations
-if prompt_install "Add useful shell configurations and aliases?"; then
-    echo_info "Adding shell configurations..."
-    cat >> ~/.bashrc << 'EOF'
-
-# Dev box optimizations
-export EDITOR=vim
-export PATH="$HOME/.local/bin:$PATH"
-export DOCKER_BUILDKIT=1
-
-# Aliases
-alias ll='ls -lah'
-alias gs='git status'
-alias gp='git pull'
-alias dc='docker-compose'
-alias nv='nvim'
-
-# NVM configuration
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# Rust configuration
-. "$HOME/.cargo/env"
-EOF
-else
-    echo_warn "Skipping shell configuration"
-fi
-
 # Create a projects directory
 if prompt_install "Create ~/Projects directory?"; then
     echo_info "Creating ~/Projects directory..."
@@ -620,6 +620,7 @@ echo "  - Postman: Run 'postman' from terminal or find in application menu"
 echo "  - VS Code: Run 'code' from terminal"
 echo "  - Zed: Run 'zed' from terminal"
 echo ""
+echo_info "System: $DISTRO $DISTRO_VERSION"
 echo_warn "IMPORTANT: Log out and back in for Docker group and shell changes to take effect!"
 echo ""
 

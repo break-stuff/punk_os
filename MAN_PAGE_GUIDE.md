@@ -2,9 +2,11 @@
 
 This guide explains how to use and maintain the Punk_OS man page system.
 
+**Compatibility**: Works on Ubuntu 20.04+, Pop!_OS, Linux Mint, Elementary OS, Zorin OS, and all Ubuntu-based distributions.
+
 ## What is a Man Page?
 
-A man (manual) page is the traditional Unix/Linux way of providing documentation. Users can access it by typing `man punk_os` from anywhere in the terminal.
+A man (manual) page is the traditional Unix/Linux way of providing documentation. Users can access it by typing `man punk_os` from anywhere in the terminal, on any Ubuntu-based distribution.
 
 ## Installation
 
@@ -59,15 +61,16 @@ man -P 'less -p "DOCKER USAGE"' punk_os
 The `punk_os` man page includes:
 
 - **NAME & SYNOPSIS** - Quick overview of commands
-- **DESCRIPTION** - What Punk_OS does
+- **DESCRIPTION** - What Punk_OS does and distribution compatibility
 - **OPTIONS** - Command-line flags for setup.sh and check-installed.sh
 - **INSTALLATION CATEGORIES** - All software that can be installed
-- **USAGE EXAMPLES** - How to run installations
+- **USAGE EXAMPLES** - How to run installations on any Ubuntu-based system
 - **VERSION MANAGERS** - Commands for nvm, pyenv, rustup, Go
 - **DOCKER USAGE** - Docker and Docker Compose commands
 - **POSTGRESQL SETUP** - Database setup instructions
 - **CLI TOOLS USAGE** - Examples for jq, tree, httpie, etc.
 - **TROUBLESHOOTING** - Common issues and solutions
+- **REQUIREMENTS** - Ubuntu 20.04+ and distribution compatibility
 - **FILES** - Important configuration files
 - **ENVIRONMENT VARIABLES** - What gets set
 - **EXAMPLES** - Complete workflow examples
@@ -257,6 +260,18 @@ When contributing to Punk_OS:
 - [Roff/Troff Tutorial](https://www.gnu.org/software/groff/manual/)
 - [Linux Man Pages Online](https://linux.die.net/man/)
 
+## Distribution Compatibility
+
+The Punk_OS man page and all scripts work on:
+- Ubuntu 20.04, 22.04, 23.04+
+- Pop!_OS 20.04+
+- Linux Mint 20+
+- Elementary OS 6+
+- Zorin OS 16+
+- Any Ubuntu-based distribution with apt package manager
+
+The setup script automatically detects your distribution and adapts accordingly. All documentation reflects this cross-distribution compatibility.
+
 ## Summary
 
-The Punk_OS man page provides users with instant, offline access to comprehensive documentation. It's automatically installed by the setup script and can be accessed anytime with `man punk_os`. This professional touch makes your development environment setup tool more accessible and user-friendly.
+The Punk_OS man page provides users with instant, offline access to comprehensive documentation on any Ubuntu-based distribution. It's automatically installed by the setup script and can be accessed anytime with `man punk_os`. This professional touch makes your development environment setup tool more accessible and user-friendly across the entire Ubuntu ecosystem.

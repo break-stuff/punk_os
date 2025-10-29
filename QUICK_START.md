@@ -2,6 +2,8 @@
 
 Welcome! This guide helps you quickly access documentation for your Punk_OS development environment.
 
+**Compatible with**: Ubuntu 20.04+, Pop!_OS, Linux Mint, Elementary OS, Zorin OS, and other Ubuntu-based distributions.
+
 ## 📖 How to Access Documentation
 
 ### Option 1: Man Page (Recommended)
@@ -48,8 +50,10 @@ cat README.md
 
 ## 🚀 First-Time Setup
 
+Works on any Ubuntu-based distribution!
+
 ```bash
-# 1. Run the setup script
+# 1. Run the setup script (auto-detects your distribution)
 ./setup.sh
 
 # 2. Follow the prompts (or use -y for automatic installation)
@@ -61,6 +65,8 @@ cat README.md
 # 4. Access the manual anytime
 man punk_os
 ```
+
+The script will automatically detect your distribution (Ubuntu, Pop!_OS, Mint, etc.) and adjust accordingly.
 
 ## 🔧 Common Commands After Installation
 
@@ -173,6 +179,7 @@ After installing new software or making changes:
 | **Generated report** | `./INSTALLED.md` |
 | **Projects directory** | `~/Projects` |
 | **Shell config** | `~/.bashrc` or `~/.zshrc` |
+| **System detected** | Check with `lsb_release -a` |
 
 ## 🎓 Next Steps
 
@@ -181,6 +188,20 @@ After installing new software or making changes:
 3. ✅ Set up your first project in `~/Projects`
 4. ✅ Configure your shell and editor preferences
 5. ✅ Install language-specific tools as needed
+
+---
+
+## 🌐 Distribution Compatibility
+
+Punk_OS works on:
+- ✅ Ubuntu 20.04, 22.04, 23.04+
+- ✅ Pop!_OS 20.04+
+- ✅ Linux Mint 20+
+- ✅ Elementary OS 6+
+- ✅ Zorin OS 16+
+- ✅ Any Ubuntu-based distribution with apt package manager
+
+The script auto-detects your system and adapts accordingly.
 
 ---
 

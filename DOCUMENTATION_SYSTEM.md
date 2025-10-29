@@ -6,13 +6,16 @@ This document explains the complete documentation system for Punk_OS, including 
 
 The Punk_OS project now includes a comprehensive, multi-layered documentation system that provides users with easy access to installation information, usage guides, and quick references.
 
+**Compatibility**: Works on Ubuntu 20.04+, Pop!_OS, Linux Mint, Elementary OS, Zorin OS, and all other Ubuntu-based distributions that use the apt package manager.
+
 ## Documentation Components
 
 ### 1. Man Page System (`man punk_os`)
 
 **File**: `punk_os.1`  
 **Installed to**: `/usr/local/man/man1/punk_os.1`  
-**Access**: `man punk_os` (from anywhere after installation)
+**Access**: `man punk_os` (from anywhere after installation)  
+**Compatible with**: All Ubuntu-based distributions
 
 The man page provides:
 - Quick reference for all commands
@@ -22,6 +25,7 @@ The man page provides:
 - CLI tool examples (jq, tree, httpie, flameshot, etc.)
 - Troubleshooting guides
 - Complete command examples
+- Distribution compatibility information
 
 **Benefits**:
 - ✅ Always available offline
@@ -34,10 +38,11 @@ The man page provides:
 
 **File**: `check-installed.sh`  
 **Output**: `INSTALLED.md` (customizable)  
-**Usage**: `./check-installed.sh [output-file]`
+**Usage**: `./check-installed.sh [output-file]`  
+**Compatible with**: All Ubuntu-based distributions
 
 This script scans the system and generates a comprehensive report including:
-- System information (OS, kernel, architecture)
+- System information (distribution, OS version, kernel, architecture)
 - All installed package managers and version managers
 - Programming languages and runtimes with versions
 - Development tools and IDEs
@@ -62,6 +67,7 @@ This script scans the system and generates a comprehensive report including:
 
 Contains:
 - Project overview
+- Distribution compatibility information
 - Quick start instructions
 - Detailed feature descriptions
 - Installation examples
@@ -206,8 +212,10 @@ System locations:
 ## For End Users
 
 ### Most Common Use Case
+Works on any Ubuntu-based distribution!
+
 ```bash
-# Install everything
+# Install everything (auto-detects your distribution)
 ./setup.sh -y
 
 # Check the manual anytime
@@ -339,6 +347,23 @@ Potential additions:
 - Automated update checking
 - Integration with system documentation tools
 
+## Distribution Support
+
+Punk_OS is designed to work seamlessly across Ubuntu-based distributions:
+
+- ✅ **Ubuntu** 20.04, 22.04, 23.04+
+- ✅ **Pop!_OS** 20.04+
+- ✅ **Linux Mint** 20+
+- ✅ **Elementary OS** 6+
+- ✅ **Zorin OS** 16+
+- ✅ **Any Ubuntu-based distro** with apt package manager
+
+The setup script automatically:
+- Detects your distribution and version
+- Verifies compatibility
+- Adapts installation methods as needed
+- Reports your system info in all generated documentation
+
 ## Summary
 
 The Punk_OS documentation system provides:
@@ -347,5 +372,6 @@ The Punk_OS documentation system provides:
 - **Multiple formats**: Man page, Markdown, quick start
 - **Professional polish**: Standard Linux documentation practices
 - **Easy maintenance**: Clear structure and update process
+- **Universal compatibility**: Works on any Ubuntu-based distribution
 
-Users can type `man punk_os` from anywhere to get comprehensive, searchable documentation about their development environment setup.
+Users can type `man punk_os` from anywhere to get comprehensive, searchable documentation about their development environment setup, regardless of which Ubuntu-based distribution they're using.

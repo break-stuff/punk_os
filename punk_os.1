@@ -1,6 +1,6 @@
 .TH PUNK_OS 1 "2024" "Punk_OS 1.0" "Punk_OS Manual"
 .SH NAME
-punk_os \- Pop!_OS development environment setup and reference system
+punk_os \- Ubuntu development environment setup and reference system
 .SH SYNOPSIS
 .B setup.sh
 [\fB\-y\fR|\fB\-\-yes\fR] [\fB\-h\fR|\fB\-\-help\fR]
@@ -9,7 +9,7 @@ punk_os \- Pop!_OS development environment setup and reference system
 [\fIoutput-file\fR]
 .SH DESCRIPTION
 .B Punk_OS
-is a comprehensive development environment setup script for Pop!_OS and Ubuntu-based distributions. It transforms a fresh installation into a fully-equipped development machine with programming languages, IDEs, CLI tools, and productivity applications.
+is a comprehensive development environment setup script for Ubuntu and Ubuntu-based distributions (including Pop!_OS, Linux Mint, Elementary OS, and others). It transforms a fresh installation into a fully-equipped development machine with programming languages, IDEs, CLI tools, and productivity applications.
 
 The system includes two main components:
 .TP
@@ -333,7 +333,7 @@ Re-run the script - it will skip already installed items
 
 .TP
 .B OS
-Pop!_OS 22.04+ or Ubuntu 22.04+ based distributions
+Ubuntu 20.04+ or any Ubuntu-based distribution (Pop!_OS, Linux Mint, Elementary OS, etc.)
 .TP
 .B Network
 Internet connection for downloading packages
@@ -395,13 +395,13 @@ Should NOT be run with sudo - script will prompt when needed
 
 .SH EXAMPLES
 
-.SS Complete fresh installation
+.SS Complete fresh installation on Ubuntu
 .nf
 # Download the setup script
 wget https://raw.githubusercontent.com/your-repo/punk_os/main/setup.sh
 chmod +x setup.sh
 
-# Run interactive installation
+# Run interactive installation (works on Ubuntu, Pop!_OS, Mint, etc.)
 ./setup.sh
 
 # After installation, generate reference manual
@@ -446,6 +446,10 @@ Individual software packages have their own licenses.
 
 .SH NOTES
 This manual page provides a quick reference for the Punk_OS setup system.
+
+.B Compatibility:
+Punk_OS is designed to work on Ubuntu 20.04+ and all Ubuntu-based distributions including Pop!_OS, Linux Mint, Elementary OS, Zorin OS, and others that use the apt package manager.
+
 For detailed information about specific tools and applications, refer to their individual man pages.
 
 To generate an up-to-date list of installed software on your system, run:

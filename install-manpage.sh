@@ -2,6 +2,7 @@
 
 # Install Punk_OS Man Page
 # This script installs the punk_os man page so users can run: man punk_os
+# Compatible with Ubuntu 20.04+ and all Ubuntu-based distributions
 
 set -e
 
@@ -33,7 +34,7 @@ if [ ! -f "$MAN_SOURCE" ]; then
     exit 1
 fi
 
-echo_info "Installing Punk_OS man page..."
+echo_info "Installing Punk_OS man page (works on all Ubuntu-based distributions)..."
 
 # Determine installation directory
 # Try /usr/local/man/man1 first (preferred for local installations)
@@ -70,6 +71,8 @@ echo ""
 echo_info "✅ Installation complete!"
 echo_info ""
 echo_info "You can now run: ${GREEN}man punk_os${NC}"
+echo_info ""
+echo_info "Distribution: $(lsb_release -is 2>/dev/null || echo "Ubuntu-based") $(lsb_release -rs 2>/dev/null || echo "")"
 echo_info ""
 echo_info "To uninstall later, run:"
 echo_info "  sudo rm $MAN_DIR/punk_os.1"
