@@ -153,41 +153,38 @@ fi
 # Ordered install function list (preserves declaration order for menu)
 INSTALL_PROMPTS=(
   "enable_fstrim:Enable fstrim timer (SSD optimization)?"
-  "install_tpl:Install TPL (improves battery life)?"
   "tune_inotify:Increase inotify file watchers (recommended for editors & tooling)?"
-  "install_restricted_extras:Install proprietary codecs & drivers (improves support for Nvidia, MP3, MP4, etc.)?"
   "set_fn_function_mode:Set the function key row to \"Function\" mode instead of multimedia keys?"
   "update_keyboard_shortcuts_mac:Update keyboard shortcuts to use Mac"
   "create_projects_dir:Create ~/Projects directory?"
+  "install_tpl:Install TPL (improves battery life)?"
   "install_oh_my_zsh:Install Oh My Zsh with plugins?"
+  "install_alacritty:Install Alacritty (GPU-accelerated terminal)?"
+  "install_restricted_extras:Install proprietary codecs & drivers (improves support for Nvidia, MP3, MP4, etc.)?"
+  "install_dev_fonts:Install developer fonts (JetBrains Mono, Fira Code, Cascadia Code)?"
   "install_essential_dev_tools:Install essential dev tools (git, curl, wget, vim, etc.)?"
   "install_modern_cli_tools:Install modern CLI tools (bat, ripgrep, fd, tldr)?"
   "install_developer_utilities:Install developer utilities (jq, tree, httpie)?"
-  "install_chromium:Install Chromium Browser?"
-  "install_nvm_node:Install Node Version Manager (nvm) & Node.js LTS?"
+  "install_nvm_node:Install Node.js LTS & Node Version Manager (nvm)?"
   "install_python_pyenv:Install Python development tools & pyenv?"
   "install_rust:Install Rust toolchain (rustup)?"
   "install_go:Install Go (Golang)?"
-  "install_alacritty:Install Alacritty (GPU-accelerated terminal)?"
-  "install_flameshot:Install Flameshot (screenshot tool)?"
-  "install_docker:Install Docker (Engine, Compose)?"
-  "install_archive_tools:Install archive/compression tools (zip, unzip, 7z, rar)?"
   "install_vscode:Install Visual Studio Code?"
   "install_zed:Install Zed IDE?"
+  "install_postman:Install Postman?"
+  "install_docker:Install Docker (Engine, Compose)?"
+  "install_postgresql:Install PostgreSQL?"
+  "install_chromium:Install Chromium Browser?"
+  "install_archive_tools:Install archive/compression tools (zip, unzip, 7z, rar)?"
   "install_discord:Install Discord?"
   "install_slack:Install Slack?"
   "install_zoom:Install Zoom?"
   "install_spotify:Install Spotify?"
   "install_obsidian:Install Obsidian?"
-  "install_postman:Install Postman?"
-  "install_postgresql:Install PostgreSQL?"
+  "install_flameshot:Install Flameshot (screenshot tool)?"
   "install_obs_studio:Install OBS Studio?"
-  "install_dev_fonts:Install developer fonts (JetBrains Mono, Fira Code, Cascadia Code)?"
 )
 
-# fzf interactive multi-select menu (optional)
-# Activate by exporting USE_FZF_MENU=true before running the script.
-# Produces SELECTED_INSTALL_FUNCS array containing chosen function names.
 select_installations_menu() {
   if ! command -v fzf >/dev/null 2>&1; then
     echo_warn "fzf not found; skipping interactive selection menu."
