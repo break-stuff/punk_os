@@ -17,10 +17,10 @@ wget https://raw.githubusercontent.com/your-repo/punk_os/main/setup.sh
 # Make it executable
 chmod +x setup.sh
 
-# Run the script interactively
+# Oick what software you want to install
 ./setup.sh
 
-# Or run non-interactively (auto-accept all prompts)
+# YOLO! I trust all of the software choices and want it all!
 ./setup.sh -y
 ```
 
@@ -28,61 +28,51 @@ chmod +x setup.sh
 
 ## Quick Reference
 
-After installation, you can access comprehensive documentation anytime:
+After installation, you can generate a list of what's installed on your system:
 
 ```bash
-# View the manual page (installed automatically)
-man punk_os
-
 # Generate a list of what's installed on your system
 ./check-installed.sh
 cat INSTALLED.md
 ```
 
-The man page provides instant offline access to:
-- All available installation options
-- Usage examples for version managers (nvm, pyenv, rustup)
-- Docker, PostgreSQL, and database setup commands
-- CLI tool examples (jq, ripgrep, fzf, etc.)
-- Troubleshooting guides
-- Quick reference commands
-
 **Note**: Works on any Ubuntu-based distribution. The script auto-detects your system and adjusts accordingly.
 
 ## Available Tools
 
-This repository includes three main tools:
+This repository includes two main tools:
 
 1. **setup.sh** - Interactive installer for development environment
 2. **check-installed.sh** - Generate a reference manual of installed software
-3. **install-manpage.sh** - Install the `punk_os` man page (also done automatically by setup.sh)
 
 ## Command Line Options
 
 ### setup.sh
+
 - **Interactive Mode** (default): `./setup.sh` - Prompts for each installation step
 - **Non-Interactive Mode**: `./setup.sh -y` or `./setup.sh --yes` - Automatically accepts all prompts
 - **Help**: `./setup.sh -h` or `./setup.sh --help` - Shows usage information
-
-### check-installed.sh
-```bash
-./check-installed.sh                  # Generate INSTALLED.md
-./check-installed.sh my-system.md     # Generate with custom filename
-```
-
-### install-manpage.sh
-```bash
-./install-manpage.sh                  # Install man page for 'man punk_os' command
-```
 
 ## What Does This Script Do?
 
 The setup script is fully interactive - you'll be prompted before each installation step, allowing you to customize your setup. Here's what it can install and configure:
 
-### 🔧 System Updates & Essential Tools
+### ⚡ System Optimizations
 
-- **System Package Updates**: Updates all system packages to latest versions
-- **Build Essentials**: Essential development tools including:
+- **SSD Optimization**: Enables `fstrim` timer for better SSD performance and longevity
+- **TLP (Battery Life)**: Installs TLP for improved laptop battery management
+- **File Watcher Limits**: Increases `inotify` file watchers for development tools (VS Code, webpack, etc.)
+- **Restricted Extras**: Installs proprietary codecs and drivers (improves support for Nvidia, MP3, MP4, etc.)
+
+### ⌨️ Keyboard Configuration
+
+- **Function Key Mode**: Option to set function key row to "Function" mode instead of multimedia keys
+- **Mac-Style Keyboard Shortcuts**: Option to update keyboard shortcuts to use Mac-style Command key mappings
+  - **Note**: If Mac shortcuts don't work properly after installation, you may need to run the `kinto_patch.sh` script to fix compatibility issues with the xkeysnail service
+
+### 🔧 Essential Development Tools
+
+- **Essential Dev Tools**: Core development utilities including:
   - `build-essential` (GCC, G++, make, etc.)
   - `git` - Version control
   - `curl` & `wget` - Download tools
@@ -90,13 +80,7 @@ The setup script is fully interactive - you'll be prompted before each installat
   - `htop` - System monitor
   - `tmux` - Terminal multiplexer
   - `zsh` - Advanced shell
-  - `timeshift` - System backups
   - `net-tools` - Network utilities
-
-### ⚡ System Optimizations
-
-- **File Watcher Limits**: Increases `inotify` file watchers for development tools (VS Code, webpack, etc.)
-- **SSD Optimization**: Enables `fstrim` timer for better SSD performance and longevity
 
 ### 🛠️ Modern CLI Tools
 
@@ -116,9 +100,10 @@ Replaces traditional Unix tools with modern, faster alternatives:
 
 ### 📦 Archive & Compression Tools
 
-- **`zip/unzip`** - ZIP archive support
-- **`p7zip-full`** - 7-Zip compression with full format support
-- **`unrar`** - RAR archive extraction
+- **Archive Tools**: Complete suite of compression utilities
+  - `zip/unzip` - ZIP archive support
+  - `p7zip-full` - 7-Zip compression with full format support
+  - `unrar` - RAR archive extraction
 
 ### 🐳 Containerization
 
@@ -130,8 +115,8 @@ Replaces traditional Unix tools with modern, faster alternatives:
 
 ### 🌐 Node.js Development
 
-- **Node Version Manager (nvm)**: Manage multiple Node.js versions
 - **Node.js LTS**: Latest Long Term Support version installed by default
+- **Node Version Manager (nvm)**: Manage multiple Node.js versions
 
 ### 🐍 Python Development
 
@@ -172,35 +157,24 @@ Professional coding fonts with ligature support:
   - `zsh-autosuggestions` - Command suggestions
   - `zsh-syntax-highlighting` - Syntax highlighting
   - Zsh set as default shell
+  - Useful aliases and environment variables configured
 
 ### 🗂️ Development Setup
 
-- **Projects Directory**: Creates `~/Projects` for organizing code
-- **Shell Configuration**: Adds useful aliases and environment variables:
-  - `ll='ls -lah'`
-  - `gs='git status'`
-  - `gp='git pull'`
-  - `dc='docker-compose'`
-  - `nv='nvim'`
-
-### 🎨 GNOME Extensions
-
-- **Caffeine**: Prevents screen from going to sleep
-- **System Monitor**: Shows system resources in top bar
+- **Projects Directory**: Creates `~/Projects` for organizing code projects
 
 ### 📱 Productivity Applications
 
 - **Communication**: Discord, Slack, Zoom
-- **Media**: Spotify, VLC Media Player
+- **Media**: Spotify
 - **Note-taking**: Obsidian
 - **Screen Recording**: OBS Studio
 - **Web Browser**: Chromium
 
 ### 🛠️ API Development Tools
 
-- **Postman**: Popular API testing tool
-- **Bruno**: Open-source API client alternative
-- **HTTPie**: Command-line HTTP client with intuitive syntax
+- **Postman**: Popular API testing and development platform
+- **HTTPie**: Command-line HTTP client with intuitive syntax (installed with Developer Utilities)
 
 ### 📸 Screenshot Tools
 
@@ -209,6 +183,8 @@ Professional coding fonts with ligature support:
 ### 🗄️ Database
 
 - **PostgreSQL**: Full PostgreSQL installation with contrib packages
+  - Optional pgAdmin 4 Desktop for database management GUI
+  - You'll be prompted to install pgAdmin during PostgreSQL setup
 
 ## Usage Examples
 
@@ -357,19 +333,31 @@ font:
 
 ### Modifying the Script
 
-The script is designed to be easily customizable. Each installation section is wrapped in an `if prompt_install` block, making it easy to:
+The script is designed to be easily customizable:
 
-- Add new software installations
-- Modify existing installations
-- Remove sections you don't need
+- **Interactive Selection**: The script uses an fzf-based menu system where you can select which components to install
+- **INSTALL_PROMPTS Array**: All installation options are defined in the `INSTALL_PROMPTS` array at the top of the script
+- **Installation Functions**: Each option corresponds to a function (e.g., `install_docker`, `install_vscode`)
+- **Adding New Software**: Create a new installation function and add it to the `INSTALL_PROMPTS` array
+- **Removing Options**: Simply remove entries from the `INSTALL_PROMPTS` array
+- **Modifying Installations**: Edit the corresponding installation function
 
 ### Shell Configuration
 
-The script adds configurations to `~/.bashrc`. You can customize these by editing the file after installation or modifying the script before running.
+The script adds configurations to `~/.bashrc` and `~/.zshrc` (if Oh My Zsh is installed). You can customize these by editing the files after installation or modifying the script before running.
 
 ## Troubleshooting
 
 ### Common Issues
+
+**Mac Keyboard Shortcuts Not Working:**
+- If Mac-style shortcuts (Command key mappings) aren't functioning correctly, run the Kinto patch script:
+  ```bash
+  ./kinto_patch.sh
+  ```
+- This script fixes compatibility issues with the xkeysnail service by patching the input.py file
+- The script will automatically restart the xkeysnail service after applying the patch
+- Note: Requires kinto-master to be extracted in ~/Downloads/
 
 **Docker Permission Denied:**
 - Log out and back in for group changes to take effect
@@ -433,17 +421,23 @@ This setup script is provided as-is for educational and development purposes. In
 
 When running with `-y` flag, the following software is installed:
 
+**System Optimizations:** fstrim (SSD), TLP (battery), increased inotify limits, restricted extras (codecs/drivers)  
 **Languages & Runtimes:** Node.js (nvm), Python (pyenv), Rust, Go  
-**Databases:** PostgreSQL  
+**Databases:** PostgreSQL (with optional pgAdmin)  
 **Containers:** Docker with Compose  
-**IDEs/Editors:** VS Code, Zed, Alacritty  
+**IDEs/Editors:** VS Code, Zed, Alacritty, Neovim  
+**Essential Tools:** git, curl, wget, vim, build-essential, htop, tmux, zsh, net-tools  
 **CLI Tools:** bat, fzf, ripgrep, fd, jq, tree, httpie, tldr  
-**API Tools:** Postman, Bruno, HTTPie  
+**Shell:** Oh My Zsh with autosuggestions and syntax highlighting plugins  
+**API Tools:** Postman, HTTPie  
 **Fonts:** JetBrains Mono, Fira Code, Cascadia Code  
 **Screenshots:** Flameshot  
-**Communication:** Discord, Slack, Zoom, Spotify  
-**Media:** VLC, OBS Studio  
+**Communication:** Discord, Slack, Zoom  
+**Media:** Spotify, OBS Studio  
 **Productivity:** Obsidian, Chromium  
-**Utilities:** Archive tools (zip, 7z, rar), GNOME extensions (on GNOME-based systems)
+**Utilities:** Archive tools (zip, unzip, 7z, rar)  
+**Configuration:** ~/Projects directory, Mac keyboard shortcuts (optional), function key mode (optional)
 
 **Note**: Some packages may have slightly different names or installation methods depending on your specific Ubuntu-based distribution. The script handles these differences automatically.
+
+Each option can be individually accepted or skipped during interactive installation, or all can be installed at once using the `-y` flag.
