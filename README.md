@@ -143,6 +143,11 @@ Professional coding fonts with ligature support:
 
 - **Flameshot**: Advanced screenshot tool with annotation features
 
+### 🎨 Graphics & Design
+
+- **GIMP**: Professional image editor for photo retouching, image composition, and image authoring
+- **Inkscape**: Professional vector graphics editor for creating and editing SVG files
+
 ### 🗄️ Database
 
 - **PostgreSQL**: Full PostgreSQL installation with contrib packages
@@ -197,7 +202,7 @@ The script uses `set -e` to exit on errors. If it fails:
 
 This script focuses on development tools and doesn't include:
 - Games or gaming-related software
-- Specialized design software (GIMP, Blender, etc.)
+- 3D modeling software (Blender, etc.)
 - Hardware-specific drivers
 - Custom kernel modifications
 - Distribution-specific customizations (uses standard Ubuntu packages)

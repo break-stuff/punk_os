@@ -16,7 +16,7 @@
 #
 # GUI apps supported via Flatpak / Snap:
 #   VS Code, Discord, Slack, Zoom, Spotify, Postman, Obsidian, Chromium,
-#   OBS Studio, Flameshot, Alacritty, Zed
+#   OBS Studio, Flameshot, Alacritty, Zed, GIMP, Inkscape
 ###############################################################################
 
 set -e  # Exit immediately on error
@@ -183,6 +183,8 @@ INSTALL_PROMPTS=(
   "install_obsidian:Install Obsidian?"
   "install_flameshot:Install Flameshot (screenshot tool)?"
   "install_obs_studio:Install OBS Studio?"
+  "install_gimp:Install GIMP (image editor)?"
+  "install_inkscape:Install Inkscape (vector graphics editor)?"
 )
 
 select_installations_menu() {
@@ -606,6 +608,26 @@ install_obs_studio() {
   fi
 }
 
+install_gimp() {
+  case "$GUI_SOURCE" in
+    flatpak) flatpak_install "$FP_GIMP" "GIMP" || { gui_fallback_notice "GIMP"; } ;;
+    snap)    snap_install gimp "" "GIMP"       || { gui_fallback_notice "GIMP"; } ;;
+  esac
+  if ! command -v gimp >/dev/null 2>&1 && [[ "$GUI_SOURCE" == "apt" ]]; then
+    sudo apt install -y gimp
+  fi
+}
+
+install_inkscape() {
+  case "$GUI_SOURCE" in
+    flatpak) flatpak_install "$FP_INKSCAPE" "Inkscape" || { gui_fallback_notice "Inkscape"; } ;;
+    snap)    snap_install inkscape "" "Inkscape"       || { gui_fallback_notice "Inkscape"; } ;;
+  esac
+  if ! command -v inkscape >/dev/null 2>&1 && [[ "$GUI_SOURCE" == "apt" ]]; then
+    sudo apt install -y inkscape
+  fi
+}
+
 
 
 # ---------------------- Flatpak / Snap GUI Source Logic ----------------------
@@ -742,6 +764,8 @@ FP_FLAMESHOT="org.flameshot.Flameshot"
 FP_ALACRITTY="org.alacritty.Alacritty"
 FP_PGADMIN="io.pgadmin.pgadmin4"
 FP_ZED="dev.zed.Zed"
+FP_GIMP="org.gimp.GIMP"
+FP_INKSCAPE="org.inkscape.Inkscape"
 
 # ------------------------------- Summary -------------------------------------
 show_summary() {
