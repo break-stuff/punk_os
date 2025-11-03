@@ -831,7 +831,7 @@ show_summary() {
     echo "  Apply: source ~/.zshrc"
     echo
     echo_info "All set! You are ready to rock!!! 🤘"
-    echo_info "Built with ❤️ by developers who were tired of manual setups"
+    echo_info "Built with ❤️  by developers who were tired of manual setups"
 }
 
 start_installs() {
