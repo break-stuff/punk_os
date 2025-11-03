@@ -140,14 +140,6 @@ if [[ "$DISTRO" == "Ubuntu" ]] || [[ "$DISTRO" == "Pop" ]]; then
     fi
 fi
 
-# Install fzf if not already present (needed for optional interactive menu)
-if ! command -v fzf >/dev/null 2>&1; then
-    echo_info "Installing fzf (fuzzy finder for interactive menu)..."
-    sudo apt install -y -qq fzf
-fi
-
-
-
 # ------------------------- Install Prompt Map & Functions --------------------
 # Associative array mapping function names to prompt strings
 # Ordered install function list (preserves declaration order for menu)
@@ -186,6 +178,13 @@ INSTALL_PROMPTS=(
   "install_gimp:Install GIMP (image editor)?"
   "install_inkscape:Install Inkscape (vector graphics editor)?"
 )
+
+install_fzf() {
+  if ! command -v fzf >/dev/null 2>&1; then
+    echo_info "Installing fzf (fuzzy finder for interactive menu)..."
+    sudo apt install -y fzf
+  fi
+}
 
 select_installations_menu() {
   if ! command -v fzf >/dev/null 2>&1; then
@@ -826,7 +825,10 @@ start_installs() {
     show_logo
     echo
     echo "Welcome to PUNK_OS!!!"
+    echo "This script is designed to help you quickly set up a development environment on an Ubuntu-based system."
+    echo
     if prompt_install "Are you ready to get started?"; then
+        install_fzf
         echo_info "Running updates..."
         sudo apt update -qq
         select_installations_menu || true
