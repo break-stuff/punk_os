@@ -825,12 +825,12 @@ start_installs() {
     show_logo
     echo
     echo "Welcome to PUNK_OS!!!"
-    echo "This script is designed to help you quickly set up a development environment on an Ubuntu-based system."
+    echo "This script is designed to help you set up a dev environment on an Ubuntu-based system."
     echo
     if prompt_install "Are you ready to get started?"; then
-        install_fzf
         echo_info "Running updates..."
         sudo apt update -qq
+        install_fzf
         select_installations_menu || true
         run_selected_installations
         sudo apt update -qq
