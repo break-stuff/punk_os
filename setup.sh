@@ -1,25 +1,26 @@
 #!/bin/bash
 ###############################################################################
-# Punk_OS - Ubuntu Development Environment Setup Script
+# 🎸 Punk_OS - Ubuntu Development Environment Setup Script 🎸
 # Compatible with Ubuntu 20.04+, Pop!_OS, Linux Mint, Elementary OS, Zorin OS,
-# and other Ubuntu-based distributions using apt.
+# and basically any Ubuntu-flavored distro that uses apt.
 #
-# This script is interactive unless -y/--yes is supplied.
+# This script is interactive (we ask before we wreck... I mean install).
+# Want to live dangerously? Use -y/--yes for full auto mode.
 #
 # Packaging Source Override:
-#   --gui-source flatpak|snap|apt   (priority override for GUI apps)
+#   --gui-source flatpak|snap|apt   (pick your poison for GUI apps)
 #
-# Automatic detection order (if no override):
-#   1. Flatpak (if present or user installs)
-#   2. Snap
-#   3. apt/.deb fallback
+# Automatic detection order (if you don't override):
+#   1. Flatpak (the hipster choice)
+#   2. Snap (the controversial one)
+#   3. apt/.deb fallback (the classic)
 #
 # GUI apps supported via Flatpak / Snap:
 #   VS Code, Discord, Slack, Zoom, Spotify, Postman, Obsidian, Chromium,
 #   OBS Studio, Flameshot, Alacritty, Zed, GIMP, Inkscape
 ###############################################################################
 
-set -e  # Exit immediately on error
+set -e  # Exit immediately on error (because we're dramatic like that)
 
 show_logo() {
     echo "                            @@@@@  "
@@ -46,7 +47,7 @@ show_logo() {
     echo "                   -##-            "
 }
 
-# ----------------------------- Argument Parsing ------------------------------
+# ----------------------- Argument Parsing (The boring part) ------------------
 AUTO_YES=false
 GUI_SOURCE_OVERRIDE=""
 while [[ $# -gt 0 ]]; do
@@ -77,7 +78,7 @@ Examples:
   ./setup.sh --gui-source flatpak
   ./setup.sh -y --gui-source=snap
 
-Do NOT run this script with sudo. It will request elevation when needed.
+Do NOT run this script with sudo. Seriously. Don't. We'll ask for your password when we need it.
 USAGE
             exit 0
             ;;
@@ -89,7 +90,7 @@ USAGE
     esac
 done
 
-# ----------------------------- Output Formatting -----------------------------
+# ----------------------- Output Formatting (Making things pretty) ------------
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -97,12 +98,12 @@ NC='\033[0m'
 
 echo_info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
 echo_warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
-echo_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+echo_error() { echo -e "${RED}[ERROR]${NC} $1"; }  # For when things go sideways
 
-# ----------------------------- Prompt Function -------------------------------
+# ------------------------ Prompt Function (Ask before we act) ---------------
 prompt_install() {
   if [[ "$AUTO_YES" == true ]]; then
-    return 0
+    return 0  # YOLO mode activated
   fi
   local prompt_text="$1"
   read -p "$prompt_text (y/n) " -n 1 -r
@@ -110,14 +111,14 @@ prompt_install() {
   [[ $REPLY =~ ^[Yy]$ ]]
 }
 
-# ----------------------------- Safety Checks ---------------------------------
+# ------------------------ Safety Checks (Hold my beer...) -------------------
 if [[ $EUID -eq 0 ]]; then
-    echo_error "Do not run as root. Re-run without sudo."
+    echo_error "Do not run as root. Re-run without sudo. We're not monsters."
     exit 1
 fi
 
 if ! command -v apt >/dev/null 2>&1; then
-    echo_error "apt package manager not found. This script targets Debian/Ubuntu-based systems."
+    echo_error "apt package manager not found. Wrong distro, friend. This script is for Debian/Ubuntu-based systems."
     exit 1
 fi
 
@@ -126,23 +127,23 @@ DISTRO_VERSION=$(lsb_release -rs 2>/dev/null || echo "unknown")
 
 # echo_info "Starting Punk_OS Development Environment Setup..."
 # echo_info "Detected: $DISTRO $DISTRO_VERSION"
-[[ "$AUTO_YES" == true ]] && echo_info "Non-interactive mode enabled (auto-accepting prompts)"
+[[ "$AUTO_YES" == true ]] && echo_info "Non-interactive mode enabled (living life on the edge)"
 
-# Ubuntu version advisory
+# Ubuntu version check (are you old-school?)
 if [[ "$DISTRO" == "Ubuntu" ]] || [[ "$DISTRO" == "Pop" ]]; then
     MAJOR_VERSION=$(echo "$DISTRO_VERSION" | cut -d. -f1 || echo 0)
     if [[ "$MAJOR_VERSION" -lt 20 ]]; then
-        echo_warn "Script designed for Ubuntu 20.04+. Detected: $DISTRO_VERSION"
+        echo_warn "Script designed for Ubuntu 20.04+. Detected: $DISTRO_VERSION (that's vintage!)"
         if [[ "$AUTO_YES" != true ]]; then
             read -p "Continue anyway? (y/n) " -n 1 -r; echo
-            [[ $REPLY =~ ^[Yy]$ ]] || { echo_info "Cancelled."; exit 0; }
+            [[ $REPLY =~ ^[Yy]$ ]] || { echo_info "Cancelled. Maybe time for an upgrade?"; exit 0; }
         fi
     fi
 fi
 
-# ------------------------- Install Prompt Map & Functions --------------------
-# Associative array mapping function names to prompt strings
-# Ordered install function list (preserves declaration order for menu)
+# --------------- Install Prompt Map & Functions (The buffet menu) ------------
+# This is where all the magic lives
+# Ordered list that shows up in your interactive menu
 INSTALL_PROMPTS=(
   "enable_fstrim:Enable fstrim timer (SSD optimization)?"
   "tune_inotify:Increase inotify file watchers (recommended for editors & tooling)?"
@@ -188,11 +189,11 @@ install_fzf() {
 
 select_installations_menu() {
   if ! command -v fzf >/dev/null 2>&1; then
-    echo_warn "fzf not found; skipping interactive selection menu."
+    echo_warn "fzf not found; skipping fancy interactive menu (sad face)."
     return 1
   fi
-  [[ $FZF_DEFAULT_OPTS == *"--tac"* ]] && echo_warn "Detected --tac in FZF_DEFAULT_OPTS (reverses order). Overriding for menu."
-  echo_info "Launching interactive installation selection menu (fzf)..."
+  [[ $FZF_DEFAULT_OPTS == *"--tac"* ]] && echo_warn "Detected --tac in FZF_DEFAULT_OPTS (reverses order). Overriding because we like things our way."
+  echo_info "Launching interactive menu (choose your adventure)..."
   local menu
   FZF_DEFAULT_OPTS='' \
   menu=$(for i in "${!INSTALL_PROMPTS[@]}"; do
@@ -214,10 +215,10 @@ select_installations_menu() {
   echo_info "Selections: ${SELECTED_INSTALL_FUNCS[*]:-(none)}"
 }
 
-# Execute only selected installation functions (if any)
+# Execute only selected functions (Let's do this!)
 run_selected_installations() {
   if [[ ${#SELECTED_INSTALL_FUNCS[@]} -eq 0 ]]; then
-    echo_warn "No selections captured; nothing to run from menu."
+    echo_warn "No selections? Alright, nothing to do here. 🤷"
     return 0
   fi
   for fn in "${SELECTED_INSTALL_FUNCS[@]}"; do
@@ -225,42 +226,42 @@ run_selected_installations() {
       echo_info "Running: $fn"
       "$fn"
     else
-      echo_warn "Undefined function selected: $fn"
+      echo_warn "Undefined function selected: $fn (this shouldn't happen, but here we are)"
     fi
   done
 }
 
 install_oh_my_zsh() {
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo_info "Installing Oh My Zsh..."
+    echo_info "Installing Oh My Zsh (prepare for terminal awesomeness)..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
     chsh -s "$(which zsh)"
-    echo_info "Zsh set as default shell (logout/login to activate)"
+    echo_info "Zsh set as default shell (logout/login to activate your new superpowers)"
   else
-    echo_info "Oh My Zsh already installed"
+    echo_info "Oh My Zsh already installed (you're already cool)"
   fi
 }
 
 install_essential_dev_tools() {
-  echo_info "Installing essential dev tools..."
+  echo_info "Installing essential dev tools (the classics that never go out of style)..."
   sudo apt install -y \
     build-essential git gh curl wget vim neovim htop tmux zsh \
     gnome-shell-extensions timeshift net-tools ca-certificates gnupg lsb-release
 }
 
 install_restricted_extras() {
-  echo_info "Installing proprietary codecs and drivers (ubuntu-restricted-extras)..."
+  echo_info "Installing proprietary codecs and drivers (the legally questionable stuff)..."
   echo_info "This includes: MP3/MP4 codecs, Microsoft fonts, Flash plugin, DVD playback support"
-  # Pre-accept EULA for ttf-mscorefonts-installer to avoid interactive prompt
+  # Pre-accept EULA (because who actually reads those?)
   echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
   sudo apt install -y ubuntu-restricted-extras
-  echo_info "Proprietary codecs and drivers installed successfully"
+  echo_info "Proprietary codecs and drivers installed successfully (you can now play all the things)"
 }
 
 tune_inotify() {
-  echo_info "Adjusting inotify watcher limit..."
+  echo_info "Cranking up inotify watcher limit (so VS Code stops complaining)..."
   echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
   sudo sysctl -p
 }
@@ -290,13 +291,16 @@ enable_fstrim() {
 }
 
 install_modern_cli_tools() {
+  echo_info "Installing modern CLI tools (your grandpa's Unix tools, but faster)..."
   sudo apt install -y bat ripgrep fd-find tldr
   mkdir -p ~/.local/bin
+  # Ubuntu names things weirdly, so we fix that
   ln -sf /usr/bin/batcat ~/.local/bin/bat 2>/dev/null || true
   ln -sf /usr/bin/fdfind ~/.local/bin/fd 2>/dev/null || true
 }
 
 install_developer_utilities() {
+  echo_info "Installing developer utilities (the tools you didn't know you needed)..."
   sudo apt install -y jq tree httpie
 }
 
@@ -306,6 +310,7 @@ install_archive_tools() {
 
 install_docker() {
   if ! command -v docker >/dev/null 2>&1; then
+    echo_info "Installing Docker (because 'it works on my machine' isn't good enough)..."
     sudo apt remove -y docker docker-engine docker.io containerd runc 2>/dev/null || true
     sudo install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -315,61 +320,65 @@ install_docker() {
 $(. /etc/os-release && echo "$UBUNTU_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     sudo usermod -aG docker "$USER"
-    echo_info "Docker installed. Log out and back in for group membership to take effect."
+    echo_info "Docker installed. Log out and back in (the IT Crowd was right about turning it off and on)."
   else
-    echo_info "Docker already installed"
+    echo_info "Docker already installed (you're already containerizing like a pro)"
   fi
 }
 
 install_nvm_node() {
     if [ -d "$HOME/.nvm" ] || [ -n "$NVM_DIR" ]; then
-        echo_info "nvm is already installed"
+        echo_info "nvm is already installed (you're ahead of the game)"
         return 0
     fi
-    echo_info "Installing nvm (Node Version Manager)..."
+    echo_info "Installing nvm (because one Node version is never enough)..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     if command -v nvm >/dev/null 2>&1; then
-        echo_info "Installing Node.js LTS via nvm..."
+        echo_info "Installing Node.js LTS (the stable choice)..."
         nvm install --lts
         nvm use --lts
     fi
 }
 
 install_python_pyenv() {
+  echo_info "Installing Python tools (prepare for dependency hell)..."
   sudo apt install -y python3-pip python3-venv python3-dev
   if [ ! -d "$HOME/.pyenv" ]; then
+    echo_info "Installing pyenv (juggle Python versions like a circus performer)..."
     curl https://pyenv.run | bash
     cat >> ~/.bashrc <<'EOF'
-# Pyenv configuration
+# Pyenv configuration (for when you need Python 2, 3, and 3.12 all at once)
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 EOF
   else
-    echo_info "pyenv already installed"
+    echo_info "pyenv already installed (nice!)"
   fi
 }
 
 install_rust() {
   if ! command -v rustc >/dev/null 2>&1; then
+    echo_info "Installing Rust (the language that won't let you shoot yourself in the foot)..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     source "$HOME/.cargo/env"
   else
-    echo_info "Rust already installed"
+    echo_info "Rust already installed (blazingly fast ⚡)"
   fi
 }
 
 install_go() {
   if ! command -v go >/dev/null 2>&1; then
+    echo_info "Installing Go (gotta go fast! 🐹)..."
     GO_VERSION="1.21.5"
     wget -O go.tar.gz "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz"
     sudo rm -rf /usr/local/go
     sudo tar -C /usr/local -xzf go.tar.gz
     rm go.tar.gz
     cat >> ~/.bashrc <<'EOF'
-# Go configuration
+# Go configuration (the only path Go cares about)
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
@@ -377,37 +386,43 @@ EOF
     export PATH=$PATH:/usr/local/go/bin
     export GOPATH=$HOME/go
     export PATH=$PATH:$GOPATH/bin
-    echo_info "Go installed. Reload shell or source ~/.bashrc to update PATH."
+    echo_info "Go installed. Reload shell or source ~/.bashrc (you know the drill)."
   else
-    echo_info "Go already installed"
+    echo_info "Go already installed (ready to go!)"
   fi
 }
 
 install_dev_fonts() {
+  echo_info "Installing developer fonts (making your code look pretty since... well, recently)..."
   mkdir -p ~/.local/share/fonts
   if [ ! -d ~/.local/share/fonts/JetBrainsMono ]; then
+    echo_info "Downloading JetBrains Mono (clean and modern)..."
     wget -O jetbrains.zip https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip
     unzip -q jetbrains.zip -d ~/.local/share/fonts/JetBrainsMono
     rm jetbrains.zip
   fi
   if [ ! -d ~/.local/share/fonts/FiraCode ]; then
+    echo_info "Downloading Fira Code (the ligature legend)..."
     wget -O firacode.zip https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip
     unzip -q firacode.zip -d ~/.local/share/fonts/FiraCode
     rm firacode.zip
   fi
   if [ ! -d ~/.local/share/fonts/CascadiaCode ]; then
+    echo_info "Downloading Cascadia Code (Microsoft actually nailed this one)..."
     wget -O cascadia.zip https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip
     unzip -q cascadia.zip -d ~/.local/share/fonts/CascadiaCode
     rm cascadia.zip
   fi
   fc-cache -fv
+  echo_info "Fonts installed! Your code will look fancy now ✨"
 }
 
 create_projects_dir() {
+  echo_info "Creating ~/Projects directory (because code in random places is chaos)..."
   mkdir -p ~/Projects
 }
 
-# GUI-related functions (run after choose_gui_source)
+# -------------------- GUI App Installations (The fancy stuff) ----------------
 install_alacritty() {
   case "$GUI_SOURCE" in
     flatpak) flatpak_install "$FP_ALACRITTY" "Alacritty" || { gui_fallback_notice "Alacritty"; } ;;
@@ -426,7 +441,7 @@ install_flameshot() {
   if ! command -v flameshot >/dev/null 2>&1 && [[ "$GUI_SOURCE" == "apt" ]]; then
     sudo apt install -y flameshot
   fi
-  echo_info "Configure Flameshot keybinding: Super+Shift+S → flameshot gui"
+  echo_info "Pro tip: Set keybinding Super+Shift+S → flameshot gui (for instant screenshot power)"
 }
 
 install_vscode() {
@@ -592,6 +607,7 @@ install_pgadmin() {
 }
 
 install_postgresql() {
+  echo_info "Installing PostgreSQL (the database that's actually fun to say out loud)..."
   sudo apt install -y postgresql postgresql-contrib
   echo_info "PostgreSQL installed (default user: postgres)"
   install_pgadmin
@@ -629,31 +645,31 @@ install_inkscape() {
 
 
 
-# ---------------------- Flatpak / Snap GUI Source Logic ----------------------
-# Determine availability
+# -------------- Flatpak / Snap GUI Source Logic (Pick your fighter) ----------
+# Determine what's available on your system
 FLATPAK_AVAILABLE=false
 SNAP_AVAILABLE=false
 command -v flatpak >/dev/null 2>&1 && FLATPAK_AVAILABLE=true
 command -v snap    >/dev/null 2>&1 && SNAP_AVAILABLE=true
 
-GUI_SOURCE=""   # flatpak | snap | apt
+GUI_SOURCE=""   # Options: flatpak | snap | apt
 
 choose_gui_source() {
-    # Override flag takes absolute priority if valid
+    # Override flag takes priority (you're the boss)
     if [[ -n "$GUI_SOURCE_OVERRIDE" ]]; then
         case "$GUI_SOURCE_OVERRIDE" in
             flatpak|snap|apt)
                 GUI_SOURCE="$GUI_SOURCE_OVERRIDE"
-                echo_info "GUI source overridden by flag: $GUI_SOURCE"
+                echo_info "GUI source overridden by flag: $GUI_SOURCE (you know what you want)"
                 return
                 ;;
             *)
-                echo_warn "Invalid --gui-source value '$GUI_SOURCE_OVERRIDE'; ignoring override."
+                echo_warn "Invalid --gui-source value '$GUI_SOURCE_OVERRIDE'; ignoring that nonsense."
                 ;;
         esac
     fi
 
-    # If both available, ask user preference
+    # If both available, let the user decide
     if $FLATPAK_AVAILABLE && $SNAP_AVAILABLE; then
         if prompt_install "Prefer Flatpak over Snap for GUI apps?"; then
             GUI_SOURCE="flatpak"
@@ -663,31 +679,30 @@ choose_gui_source() {
         return
     fi
 
-    # Only flatpak available
+    # Only flatpak available (the hipster choice)
     if $FLATPAK_AVAILABLE; then
         GUI_SOURCE="flatpak"
         return
     fi
 
-    # Only snap available
+    # Only snap available (the controversial one)
     if $SNAP_AVAILABLE; then
         GUI_SOURCE="snap"
         return
     fi
 
-    # Neither installed: default to apt
-    echo_info "Neither Flatpak nor Snap detected. Using apt for GUI apps."
+    # Neither installed: fallback to apt (the classic)
+    echo_info "Neither Flatpak nor Snap detected. Using apt for GUI apps (old school style)."
     GUI_SOURCE="apt"
 }
 
 choose_gui_source
-# echo_info "GUI application packaging source selected: $GUI_SOURCE"
 
-# Initialize Flathub if using Flatpak
+# Set up Flathub if we're using Flatpak
 setup_flathub() {
     if [[ "$GUI_SOURCE" == "flatpak" ]]; then
         if ! flatpak remotes | awk '{print $1}' | grep -qx flathub; then
-            echo_info "Adding Flathub remote..."
+            echo_info "Adding Flathub remote (where all the Flatpak apps live)..."
             sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
         fi
     fi
@@ -696,16 +711,16 @@ setup_flathub() {
 setup_snap() {
     if [[ "$GUI_SOURCE" == "snap" ]]; then
         if [ -f /etc/apt/preferences.d/nosnap.pref ]; then
-            echo_info "Removing nosnap.pref to enable snap installs"
+            echo_info "Removing nosnap.pref (someone tried to disable snaps, but not today)"
             sudo rm /etc/apt/preferences.d/nosnap.pref
         fi
         if ! command -v snap >/dev/null 2>&1; then
-            echo_info "Installing snapd..."
+            echo_info "Installing snapd (preparing for Snap packages)..."
             sudo apt install -y snapd
         fi
-        # Optional store (Ubuntu flavors typically)
+        # Optional store (some distros have it, some don't, whatever)
         if ! snap list | awk '{print $1}' | grep -qx snap-store 2>/dev/null; then
-            sudo snap install snap-store || echo_warn "snap-store install failed (continuing)"
+            sudo snap install snap-store || echo_warn "snap-store install failed (not a big deal, moving on)"
         fi
     fi
 }
@@ -713,11 +728,11 @@ setup_snap() {
 setup_flathub
 setup_snap
 
-# Helper functions for GUI installations
+# Helper functions for GUI installations (the boring but necessary plumbing)
 flatpak_install() {
     local app_id="$1" friendly="$2"
     if flatpak list --app | awk '{print $1}' | grep -qx "$app_id"; then
-        echo_info "Flatpak $friendly ($app_id) already installed"
+        echo_info "Flatpak $friendly ($app_id) already installed (you're ahead of us!)"
         return 0
     fi
     echo_info "Installing Flatpak $friendly ($app_id)..."
@@ -731,7 +746,7 @@ flatpak_install() {
 snap_install() {
     local pkg="$1" flags="$2" friendly="$3"
     if snap list | awk '{print $1}' | grep -qx "$pkg"; then
-        echo_info "Snap $friendly ($pkg) already installed"
+        echo_info "Snap $friendly ($pkg) already installed (nice!)"
         return 0
     fi
     echo_info "Installing Snap $friendly ($pkg)..."
@@ -742,13 +757,13 @@ snap_install() {
     fi
 }
 
-# Fallback messaging
+# When plan A doesn't work, we go to plan B
 gui_fallback_notice() {
     local name="$1"
-    echo_warn "Primary GUI source ($GUI_SOURCE) failed for $name; falling back to native package method"
+    echo_warn "Primary GUI source ($GUI_SOURCE) failed for $name; falling back to native package (plan B, baby)"
 }
 
-# Mapping for Flatpak IDs
+# Flatpak ID mappings (because Flatpak has its own naming conventions)
 FP_VSCODE="com.visualstudio.code"
 FP_DISCORD="com.discordapp.Discord"
 FP_SLACK="com.slack.Slack"
@@ -766,10 +781,10 @@ FP_ZED="dev.zed.Zed"
 FP_GIMP="org.gimp.GIMP"
 FP_INKSCAPE="org.inkscape.Inkscape"
 
-# ------------------------------- Summary -------------------------------------
+# ----------------------- Summary (The victory lap) ---------------------------
 show_summary() {
     echo_info "================================"
-    echo_info "Setup Complete!"
+    echo_info "🎸 Setup Complete! 🎸"
     echo_info "================================"
     echo
     echo_info "GUI packaging source used: $GUI_SOURCE"
@@ -803,6 +818,7 @@ show_summary() {
     echo "  Test: docker run hello-world"
     echo "  If permission denied: newgrp docker OR logout/login"
     echo "  Compose: docker compose up -d"
+    echo_warn "⚠️  IMPORTANT: Logout & login for Docker group and default shell changes (the IT Crowd was right)."
     echo
     echo_info "PostgreSQL quick setup:"
     echo "  sudo -u postgres psql"
@@ -814,10 +830,8 @@ show_summary() {
     echo "  Plugins: plugins=(git zsh-autosuggestions zsh-syntax-highlighting)"
     echo "  Apply: source ~/.zshrc"
     echo
-    echo_warn "IMPORTANT: Logout & login for Docker group and default shell changes."
-    echo_info "System: $DISTRO $DISTRO_VERSION"
-    echo_info "All requested tasks processed."
-    echo
+    echo_info "All set! You are ready to rock!!! 🤘"
+    echo_info "Built with ❤️ by developers who were tired of manual setups"
 }
 
 start_installs() {
@@ -825,10 +839,10 @@ start_installs() {
     show_logo
     echo
     echo "Welcome to PUNK_OS!!!"
-    echo "This script is designed to help you set up a dev environment on an Ubuntu-based system."
+    echo "Let's transform your boring Ubuntu install into a development beast."
     echo
     if prompt_install "Are you ready to get started?"; then
-        echo_info "Running updates..."
+        echo_info "Running updates (grabbing the latest package lists)..."
         sudo apt update -qq
         install_fzf
         select_installations_menu || true
@@ -836,7 +850,8 @@ start_installs() {
         sudo apt update -qq
         show_summary
     else
-        GUI_SOURCE="snap"
+        echo_info "Cancelled. Maybe next time! 👋"
+        exit 0
     fi
 }
 
