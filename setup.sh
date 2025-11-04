@@ -21,6 +21,7 @@
 ###############################################################################
 
 set -e  # Exit immediately on error (because we're dramatic like that)
+set -o nounset  # Treat unset variables as errors
 
 show_logo() {
     echo "                            @@@@@  "
