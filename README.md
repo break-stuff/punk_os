@@ -8,7 +8,7 @@ Transform your boring, vanilla Ubuntu or macOS installation into a fully-loaded 
 
 ## Overview
 
-The `setup.sh` (Ubuntu/Linux) and `macos.sh` (macOS) scripts are your new best friends – interactive installers that handle all the tedious setup work so you can get straight to the fun stuff (breaking things and fixing them). They come loaded with dev tools, programming languages, IDEs, productivity apps, and enough system optimizations to make your computer feel like it just had an espresso.
+The `ubuntu.sh` (Ubuntu/Linux) and `macos.sh` (macOS) scripts are your new best friends – interactive installers that handle all the tedious setup work so you can get straight to the fun stuff (breaking things and fixing them). They come loaded with dev tools, programming languages, IDEs, productivity apps, and enough system optimizations to make your computer feel like it just had an espresso.
 
 **Compatibility**: 
 - **Ubuntu/Linux**: Works on Ubuntu 20.04+, Pop!_OS, Linux Mint, Elementary OS, Zorin OS, and basically any Ubuntu-flavored distro. If it uses apt, we're good to go! 🚀
@@ -19,7 +19,7 @@ The `setup.sh` (Ubuntu/Linux) and `macos.sh` (macOS) scripts are your new best f
 ### 🐧 Ubuntu/Linux Quick Start
 
 ```bash
-/bin/bash -c "$(wget -qO- https://raw.githubusercontent.com/break-stuff/punk_os/refs/heads/main/setup.sh || curl -fsSL https://raw.githubusercontent.com/break-stuff/punk_os/refs/heads/main/setup.sh)"
+/bin/bash -c "$(wget -qO- https://raw.githubusercontent.com/break-stuff/punk_os/refs/heads/main/ubuntu.sh || curl -fsSL https://raw.githubusercontent.com/break-stuff/punk_os/refs/heads/main/ubuntu.sh)"
 ```
 
 **Important:** Do NOT run this script with `sudo`. Seriously. Don't do it. The script is smart enough to ask for your password when it needs superpowers. Running it with sudo is like wearing a tuxedo to a punk show – technically possible, but you're doing it wrong.
@@ -241,7 +241,9 @@ Professional monospaced fonts with ligatures (fancy connected characters):
 - **Media**: Spotify – Because coding in silence is weird
 - **Note-taking**: Obsidian – For building your second brain (your first one is full)
 - **Screen Recording**: OBS Studio – Capture your bugs in glorious 4K
-- **Web Browser**: Chromium – Like Chrome, but without Google looking over your shoulder
+- **Web Browsers**: Firefox, Google Chrome – Multiple browser options
+- **Productivity**: Notion – All-in-one workspace for notes and docs
+- **Screenshot Tools**: Flameshot – Advanced screenshot and annotation tool
 
 **macOS:**
 - **Communication**: Discord, Slack, Zoom – All the usual suspects
@@ -249,6 +251,7 @@ Professional monospaced fonts with ligatures (fancy connected characters):
 - **Note-taking**: Obsidian – Digital note-taking and knowledge management
 - **Screen Recording**: OBS Studio – Professional screen recording and streaming
 - **Web Browsers**: Firefox, Chrome – Multiple browser options
+- **Productivity**: Notion – All-in-one workspace
 
 ### 🛠️ API Development Tools
 

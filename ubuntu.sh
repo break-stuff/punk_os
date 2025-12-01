@@ -21,6 +21,7 @@
 ###############################################################################
 
 set -e  # Exit immediately on error (because we're dramatic like that)
+set -o nounset  # Treat unset variables as errors
 
 show_logo() {
     echo "                            @@@@@  "
@@ -168,12 +169,15 @@ INSTALL_PROMPTS=(
   "install_docker:Install Docker (Engine, Compose)?"
   "install_postgresql:Install PostgreSQL?"
   "install_chromium:Install Chromium Browser?"
+  "install_firefox:Install Firefox?"
+  "install_google_chrome:Install Google Chrome?"
   "install_archive_tools:Install archive/compression tools (zip, unzip, 7z, rar)?"
   "install_discord:Install Discord?"
   "install_slack:Install Slack?"
   "install_zoom:Install Zoom?"
   "install_spotify:Install Spotify?"
   "install_obsidian:Install Obsidian?"
+  "install_notion:Install Notion?"
   "install_flameshot:Install Flameshot (screenshot tool)?"
   "install_obs_studio:Install OBS Studio?"
   "install_gimp:Install GIMP (image editor)?"
@@ -643,6 +647,46 @@ install_inkscape() {
   fi
 }
 
+install_firefox() {
+  case "$GUI_SOURCE" in
+    flatpak) flatpak_install "$FP_FIREFOX" "Firefox" || { gui_fallback_notice "Firefox"; } ;;
+    snap)    snap_install firefox "" "Firefox"       || { gui_fallback_notice "Firefox"; } ;;
+  esac
+  if ! command -v firefox >/dev/null 2>&1 && [[ "$GUI_SOURCE" == "apt" ]]; then
+    sudo apt install -y firefox
+  fi
+}
+
+install_google_chrome() {
+  if ! command -v google-chrome >/dev/null 2>&1 && ! command -v google-chrome-stable >/dev/null 2>&1; then
+    echo_info "Installing Google Chrome..."
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+    sudo apt update
+    sudo apt install -y google-chrome-stable
+  else
+    echo_info "Google Chrome already installed"
+  fi
+}
+
+install_notion() {
+  if ! command -v notion >/dev/null 2>&1 && ! command -v notion-snap >/dev/null 2>&1; then
+    echo_info "Installing Notion..."
+    case "$GUI_SOURCE" in
+      flatpak) flatpak_install "$FP_NOTION" "Notion" || { gui_fallback_notice "Notion"; } ;;
+      snap)    snap_install notion-snap "" "Notion" || { gui_fallback_notice "Notion"; } ;;
+      apt)
+        echo_info "Notion doesn't have an official apt package. Installing via AppImage..."
+        wget -O notion.AppImage https://www.notion.so/desktop/linux/download
+        chmod +x notion.AppImage
+        sudo mv notion.AppImage /usr/local/bin/notion
+        ;;
+    esac
+  else
+    echo_info "Notion already installed"
+  fi
+}
+
 
 
 # -------------- Flatpak / Snap GUI Source Logic (Pick your fighter) ----------
@@ -780,6 +824,8 @@ FP_PGADMIN="io.pgadmin.pgadmin4"
 FP_ZED="dev.zed.Zed"
 FP_GIMP="org.gimp.GIMP"
 FP_INKSCAPE="org.inkscape.Inkscape"
+FP_FIREFOX="org.mozilla.firefox"
+FP_NOTION="org.notion.Notion"
 
 # ----------------------- Summary (The victory lap) ---------------------------
 show_summary() {
@@ -830,8 +876,8 @@ show_summary() {
     echo "  Plugins: plugins=(git zsh-autosuggestions zsh-syntax-highlighting)"
     echo "  Apply: source ~/.zshrc"
     echo
-    echo "All set! You are ready to rock!!! 🤘"
-    echo "Built with ❤️  by developers who were tired of manual setups"
+    echo_info "All set! You are ready to rock!!! 🤘"
+    echo_info "Built with ❤️  by developers who were tired of manual setups"
 }
 
 start_installs() {
