@@ -202,244 +202,558 @@ run_selected_installations() {
 
 install_homebrew_basics() {
   echo_info "Installing essential CLI packages via Homebrew..."
-  brew install git gh wget curl gnu-sed gnu-tar gnupg coreutils make cmake
-  record_step "Essential CLI packages"
+  if brew install git gh wget curl gnu-sed gnu-tar gnupg coreutils make cmake; then
+    record_step "Essential CLI packages"
+  else
+    echo_error "Failed to install essential CLI packages"
+  fi
 }
 
 install_modern_cli_suite() {
   echo_info "Installing modern CLI goodies..."
-  brew install bat eza fd ripgrep tldr tree jq httpie
-  record_step "Modern CLI tools"
+  if brew install bat eza fd ripgrep tldr tree jq httpie; then
+    record_step "Modern CLI tools"
+  else
+    echo_error "Failed to install modern CLI tools"
+  fi
 }
 
 install_shell_upgrades() {
   echo_info "Installing shell upgrades (zsh plugins, starship)..."
-  brew install zsh zsh-autosuggestions zsh-syntax-highlighting starship
-  record_step "Shell upgrades"
+  if brew install zsh zsh-autosuggestions zsh-syntax-highlighting starship; then
+    record_step "Shell upgrades"
+  else
+    echo_error "Failed to install shell upgrades"
+  fi
 }
 
 install_nvm_manager() {
   echo_info "Installing nvm (Node Version Manager) and Node.js LTS..."
-  brew install nvm
-  record_step "nvm"
+  if brew install nvm; then
+    record_step "nvm"
 
-  export NVM_DIR="$HOME/.nvm"
-  mkdir -p "$NVM_DIR"
+    export NVM_DIR="$HOME/.nvm"
+    mkdir -p "$NVM_DIR"
 
-  local nvm_script=""
-  if command -v brew >/dev/null 2>&1; then
-    local brew_prefix
-    brew_prefix=$(brew --prefix nvm 2>/dev/null || true)
-    if [[ -n "$brew_prefix" && -s "$brew_prefix/nvm.sh" ]]; then
-      nvm_script="$brew_prefix/nvm.sh"
+    local nvm_script=""
+    if command -v brew >/dev/null 2>&1; then
+      local brew_prefix
+      brew_prefix=$(brew --prefix nvm 2>/dev/null || true)
+      if [[ -n "$brew_prefix" && -s "$brew_prefix/nvm.sh" ]]; then
+        nvm_script="$brew_prefix/nvm.sh"
+      fi
     fi
-  fi
-  if [[ -z "$nvm_script" && -s "/opt/homebrew/opt/nvm/nvm.sh" ]]; then
-    nvm_script="/opt/homebrew/opt/nvm/nvm.sh"
-  elif [[ -z "$nvm_script" && -s "/usr/local/opt/nvm/nvm.sh" ]]; then
-    nvm_script="/usr/local/opt/nvm/nvm.sh"
-  fi
+    if [[ -z "$nvm_script" && -s "/opt/homebrew/opt/nvm/nvm.sh" ]]; then
+      nvm_script="/opt/homebrew/opt/nvm/nvm.sh"
+    elif [[ -z "$nvm_script" && -s "/usr/local/opt/nvm/nvm.sh" ]]; then
+      nvm_script="/usr/local/opt/nvm/nvm.sh"
+    fi
 
-  if [[ -z "$nvm_script" ]]; then
-    echo_warn "nvm script not found in Homebrew prefix. Skipping Node.js install."
-    return
-  fi
+    if [[ -z "$nvm_script" ]]; then
+      echo_warn "nvm script not found in Homebrew prefix. Skipping Node.js install."
+      return
+    fi
 
-  # shellcheck source=/dev/null
-  source "$nvm_script"
-  if command -v nvm >/dev/null 2>&1; then
-    echo_info "Installing Node.js LTS via nvm..."
-    nvm install --lts
-    nvm alias default lts/*
-    record_step "Node.js LTS"
+    # shellcheck source=/dev/null
+    source "$nvm_script"
+    if command -v nvm >/dev/null 2>&1; then
+      echo_info "Installing Node.js LTS via nvm..."
+      if nvm install --lts && nvm alias default lts/*; then
+        record_step "Node.js LTS"
+      else
+        echo_error "Failed to install Node.js LTS"
+      fi
+    else
+      echo_warn "nvm command unavailable after install; skipping Node.js LTS."
+    fi
   else
-    echo_warn "nvm command unavailable after install; skipping Node.js LTS."
+    echo_error "Failed to install nvm"
   fi
 }
 
 install_pyenv_manager() {
   echo_info "Installing pyenv (Python version manager)..."
-  brew install pyenv
-  record_step "pyenv"
+  if brew install pyenv; then
+    record_step "pyenv"
+  else
+    echo_error "Failed to install pyenv"
+  fi
 }
 
 install_go_toolchain() {
   echo_info "Installing Go toolchain..."
-  brew install go
-  record_step "Go toolchain"
+  if brew install go; then
+    record_step "Go toolchain"
+  else
+    echo_error "Failed to install Go toolchain"
+  fi
 }
 
 install_rust_toolchain() {
   echo_info "Installing rustup (Rust toolchain installer)..."
-  brew install rustup-init
-  record_step "Rust toolchain"
+  if brew install rustup-init; then
+    record_step "Rust toolchain"
+  else
+    echo_error "Failed to install Rust toolchain"
+  fi
 }
 
 
 install_vscode() {
-  echo_info "Installing Visual Studio Code..."
-  brew install --cask visual-studio-code
-  record_step "VS Code"
+  if brew list --cask | grep -q visual-studio-code; then
+    echo_info "Visual Studio Code already installed"
+    record_step "VS Code"
+  else
+    echo_info "Installing Visual Studio Code..."
+    if brew install --cask visual-studio-code; then
+      record_step "VS Code"
+    else
+      echo_error "Failed to install Visual Studio Code"
+    fi
+  fi
 }
 
 install_zed_editor() {
-  echo_info "Installing Zed editor..."
-  brew install --cask zed
-  record_step "Zed"
+  if brew list --cask | grep -q zed; then
+    echo_info "Zed editor already installed"
+    record_step "Zed"
+  else
+    echo_info "Installing Zed editor..."
+    if brew install --cask zed; then
+      record_step "Zed"
+    else
+      echo_error "Failed to install Zed editor"
+    fi
+  fi
 }
 
 install_iterm2() {
-  echo_info "Installing iTerm2..."
-  brew install --cask iterm2
-  record_step "iTerm2"
+  if brew list --cask | grep -q iterm2; then
+    echo_info "iTerm2 already installed"
+    record_step "iTerm2"
+  else
+    echo_info "Installing iTerm2..."
+    if brew install --cask iterm2; then
+      record_step "iTerm2"
+    else
+      echo_error "Failed to install iTerm2"
+    fi
+  fi
 }
 
 install_warp_terminal() {
-  echo_info "Installing Warp terminal..."
-  brew install --cask warp
-  record_step "Warp terminal"
+  if brew list --cask | grep -q warp; then
+    echo_info "Warp terminal already installed"
+    record_step "Warp terminal"
+  else
+    echo_info "Installing Warp terminal..."
+    if brew install --cask warp; then
+      record_step "Warp terminal"
+    else
+      echo_error "Failed to install Warp terminal"
+    fi
+  fi
 }
 
 install_alacritty_app() {
-  echo_info "Installing Alacritty..."
-  brew install --cask alacritty
-  record_step "Alacritty"
+  if brew list --cask | grep -q alacritty; then
+    echo_info "Alacritty already installed"
+    record_step "Alacritty"
+  else
+    echo_info "Installing Alacritty..."
+    if brew install --cask alacritty; then
+      record_step "Alacritty"
+    else
+      echo_error "Failed to install Alacritty"
+    fi
+  fi
 }
 
 install_slack_app() {
-  echo_info "Installing Slack..."
-  brew install --cask slack
-  record_step "Slack"
+  if brew list --cask | grep -q slack; then
+    echo_info "Slack already installed"
+    record_step "Slack"
+  else
+    echo_info "Installing Slack..."
+    if brew install --cask slack; then
+      record_step "Slack"
+    else
+      echo_error "Failed to install Slack"
+    fi
+  fi
 }
 
 install_discord_app() {
-  echo_info "Installing Discord..."
-  brew install --cask discord
-  record_step "Discord"
+  if brew list --cask | grep -q discord; then
+    echo_info "Discord already installed"
+    record_step "Discord"
+  else
+    echo_info "Installing Discord..."
+    if brew install --cask discord; then
+      record_step "Discord"
+    else
+      echo_error "Failed to install Discord"
+    fi
+  fi
 }
 
 install_zoom_app() {
-  echo_info "Installing Zoom..."
-  brew install --cask zoom
-  record_step "Zoom"
+  if brew list --cask | grep -q zoom; then
+    echo_info "Zoom already installed"
+    record_step "Zoom"
+  else
+    echo_info "Installing Zoom..."
+    if brew install --cask zoom; then
+      record_step "Zoom"
+    else
+      echo_error "Failed to install Zoom"
+    fi
+  fi
 }
 
 install_firefox_app() {
-  echo_info "Installing Firefox..."
-  brew install --cask firefox
-  record_step "Firefox"
+  if brew list --cask | grep -q firefox; then
+    echo_info "Firefox already installed"
+    record_step "Firefox"
+  else
+    echo_info "Installing Firefox..."
+    if brew install --cask firefox; then
+      record_step "Firefox"
+    else
+      echo_error "Failed to install Firefox"
+    fi
+  fi
 }
 
 install_chrome_app() {
-  echo_info "Installing Google Chrome..."
-  brew install --cask google-chrome
-  record_step "Google Chrome"
+  if brew list --cask | grep -q google-chrome; then
+    echo_info "Google Chrome already installed"
+    record_step "Google Chrome"
+  else
+    echo_info "Installing Google Chrome..."
+    if brew install --cask google-chrome; then
+      record_step "Google Chrome"
+    else
+      echo_error "Failed to install Google Chrome"
+    fi
+  fi
 }
 
 install_notion_app() {
-  echo_info "Installing Notion..."
-  brew install --cask notion
-  record_step "Notion"
+  if brew list --cask | grep -q notion; then
+    echo_info "Notion already installed"
+    record_step "Notion"
+  else
+    echo_info "Installing Notion..."
+    if brew install --cask notion; then
+      record_step "Notion"
+    else
+      echo_error "Failed to install Notion"
+    fi
+  fi
 }
 
 install_obsidian_app() {
-  echo_info "Installing Obsidian..."
-  brew install --cask obsidian
-  record_step "Obsidian"
+  if brew list --cask | grep -q obsidian; then
+    echo_info "Obsidian already installed"
+    record_step "Obsidian"
+  else
+    echo_info "Installing Obsidian..."
+    if brew install --cask obsidian; then
+      record_step "Obsidian"
+    else
+      echo_error "Failed to install Obsidian"
+    fi
+  fi
 }
 
 install_rectangle_app() {
-  echo_info "Installing Rectangle (window manager)..."
-  brew install --cask rectangle
-  record_step "Rectangle"
+  if brew list --cask | grep -q rectangle; then
+    echo_info "Rectangle already installed"
+    record_step "Rectangle"
+  else
+    echo_info "Installing Rectangle (window manager)..."
+    if brew install --cask rectangle; then
+      record_step "Rectangle"
+    else
+      echo_error "Failed to install Rectangle"
+    fi
+  fi
 }
 
 install_devops_tools() {
-  echo_info "Installing Docker and friends..."
-  brew install --cask docker
-  brew install kubectl kubectx helm
-  record_step "DevOps tools"
+  local attempted_install=false
+  
+  if ! brew list --cask | grep -q docker; then
+    echo_info "Installing Docker..."
+    if brew install --cask docker; then
+      attempted_install=true
+    else
+      echo_error "Failed to install Docker"
+    fi
+  else
+    echo_info "Docker already installed"
+    attempted_install=true
+  fi
+  
+  if ! brew list | grep -q kubectl; then
+    echo_info "Installing kubectl..."
+    if brew install kubectl; then
+      attempted_install=true
+    else
+      echo_error "Failed to install kubectl"
+    fi
+  else
+    echo_info "kubectl already installed"
+    attempted_install=true
+  fi
+  
+  if ! brew list | grep -q kubectx; then
+    echo_info "Installing kubectx..."
+    if brew install kubectx; then
+      attempted_install=true
+    else
+      echo_error "Failed to install kubectx"
+    fi
+  else
+    echo_info "kubectx already installed"
+    attempted_install=true
+  fi
+  
+  if ! brew list | grep -q helm; then
+    echo_info "Installing helm..."
+    if brew install helm; then
+      attempted_install=true
+    else
+      echo_error "Failed to install helm"
+    fi
+  else
+    echo_info "helm already installed"
+    attempted_install=true
+  fi
+  
+  if $attempted_install; then
+    record_step "DevOps tools"
+  fi
 }
 
 install_postman() {
-  echo_info "Installing Postman..."
-  brew install --cask postman
-  record_step "Postman"
+  if brew list --cask | grep -q postman; then
+    echo_info "Postman already installed"
+    record_step "Postman"
+  else
+    echo_info "Installing Postman..."
+    if brew install --cask postman; then
+      record_step "Postman"
+    else
+      echo_error "Failed to install Postman"
+    fi
+  fi
 }
 
 install_gimp_app() {
-  echo_info "Installing GIMP..."
-  brew install --cask gimp
-  record_step "GIMP"
+  if brew list --cask | grep -q gimp; then
+    echo_info "GIMP already installed"
+    record_step "GIMP"
+  else
+    echo_info "Installing GIMP..."
+    if brew install --cask gimp; then
+      record_step "GIMP"
+    else
+      echo_error "Failed to install GIMP"
+    fi
+  fi
 }
 
 install_inkscape_app() {
-  echo_info "Installing Inkscape..."
-  brew install --cask inkscape
-  record_step "Inkscape"
+  if brew list --cask | grep -q inkscape; then
+    echo_info "Inkscape already installed"
+    record_step "Inkscape"
+  else
+    echo_info "Installing Inkscape..."
+    if brew install --cask inkscape; then
+      record_step "Inkscape"
+    else
+      echo_error "Failed to install Inkscape"
+    fi
+  fi
 }
 
 install_obs_app() {
-  echo_info "Installing OBS Studio..."
-  brew install --cask obs
-  record_step "OBS Studio"
+  if brew list --cask | grep -q obs; then
+    echo_info "OBS Studio already installed"
+    record_step "OBS Studio"
+  else
+    echo_info "Installing OBS Studio..."
+    if brew install --cask obs; then
+      record_step "OBS Studio"
+    else
+      echo_error "Failed to install OBS Studio"
+    fi
+  fi
 }
 
 install_spotify_app() {
-  echo_info "Installing Spotify..."
-  brew install --cask spotify
-  record_step "Spotify"
-}
-
-install_davinci_resolve() {
-  echo_info "Installing DaVinci Resolve (video editor)..."
-  brew install --cask davinci-resolve
-  record_step "DaVinci Resolve"
+  if brew list --cask | grep -q spotify; then
+    echo_info "Spotify already installed"
+    record_step "Spotify"
+  else
+    echo_info "Installing Spotify..."
+    if brew install --cask spotify; then
+      record_step "Spotify"
+    else
+      echo_error "Failed to install Spotify"
+    fi
+  fi
 }
 
 install_parallels_app() {
-  echo_info "Installing Parallels Desktop..."
-  brew install --cask parallels
-  record_step "Parallels Desktop"
+  if brew list --cask | grep -q parallels; then
+    echo_info "Parallels Desktop already installed"
+    record_step "Parallels Desktop"
+  else
+    echo_info "Installing Parallels Desktop..."
+    if brew install --cask parallels; then
+      record_step "Parallels Desktop"
+    else
+      echo_error "Failed to install Parallels Desktop"
+    fi
+  fi
 }
 
 install_affinity_suite() {
-  echo_info "Installing Affinity suite (Designer, Photo, Publisher) via Mac App Store..."
-  brew install --cask affinity
-  record_step "Affinity suite"
+  if brew list --cask | grep -q affinity; then
+    echo_info "Affinity suite already installed"
+    record_step "Affinity suite"
+  else
+    echo_info "Installing Affinity suite (Designer, Photo, Publisher) via Mac App Store..."
+    if brew install --cask affinity; then
+      record_step "Affinity suite"
+    else
+      echo_error "Failed to install Affinity suite"
+    fi
+  fi
 }
 
 install_fonts() {
-  echo_info "Installing developer fonts..."
-  brew tap homebrew/cask-fonts
-  brew install --cask font-jetbrains-mono font-fira-code font-cascadia-code
-  record_step "Developer fonts"
+  local attempted_install=false
+  
+  if ! brew list --cask | grep -q font-jetbrains-mono; then
+    echo_info "Installing JetBrains Mono font..."
+    if brew install --cask font-jetbrains-mono 2>/dev/null; then
+      attempted_install=true
+      echo_info "JetBrains Mono font installed successfully"
+    else
+      echo_warn "JetBrains Mono font installation failed (may already be installed as variable font)"
+    fi
+  else
+    echo_info "JetBrains Mono font already installed"
+    attempted_install=true
+  fi
+  
+  if ! brew list --cask | grep -q font-fira-code; then
+    echo_info "Installing Fira Code font..."
+    if brew install --cask font-fira-code; then
+      attempted_install=true
+      echo_info "Fira Code font installed successfully"
+    else
+      echo_error "Failed to install Fira Code font"
+    fi
+  else
+    echo_info "Fira Code font already installed"
+    attempted_install=true
+  fi
+  
+  if ! brew list --cask | grep -q font-cascadia-code; then
+    echo_info "Installing Cascadia Code font..."
+    if brew install --cask font-cascadia-code; then
+      attempted_install=true
+      echo_info "Cascadia Code font installed successfully"
+    else
+      echo_error "Failed to install Cascadia Code font"
+    fi
+  else
+    echo_info "Cascadia Code font already installed"
+    attempted_install=true
+  fi
+  
+  if $attempted_install; then
+    record_step "Developer fonts"
+  fi
 }
 
 install_bartender_app() {
-  echo_info "Installing Bartender..."
-  brew install --cask bartender
-  record_step "Bartender"
+  if brew list --cask | grep -q bartender; then
+    echo_info "Bartender already installed"
+    record_step "Bartender"
+  else
+    echo_info "Installing Bartender..."
+    if brew install --cask bartender; then
+      record_step "Bartender"
+    else
+      echo_error "Failed to install Bartender"
+    fi
+  fi
 }
 
 install_cleanshot_app() {
-  echo_info "Installing CleanShot X..."
-  brew install --cask cleanshot
-  record_step "CleanShot X"
+  if brew list --cask | grep -q cleanshot; then
+    echo_info "CleanShot X already installed"
+    record_step "CleanShot X"
+  else
+    echo_info "Installing CleanShot X..."
+    if brew install --cask cleanshot; then
+      record_step "CleanShot X"
+    else
+      echo_error "Failed to install CleanShot X"
+    fi
+  fi
+}
+
+install_raycast_app() {
+  if brew list --cask | grep -q raycast; then
+    echo_info "Raycast already installed"
+    record_step "Raycast"
+  else
+    echo_info "Installing Raycast..."
+    if brew install --cask raycast; then
+      record_step "Raycast"
+    else
+      echo_error "Failed to install Raycast"
+    fi
+  fi
 }
 
 install_oh_my_zsh() {
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo_info "Installing Oh My Zsh (prepare for terminal awesomeness)..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    chsh -s "$(which zsh)"
-    echo_info "Zsh set as default shell (logout/login to activate your new superpowers)"
+    if sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; then
+      if git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null; then
+        echo_info "Installed zsh-autosuggestions"
+      else
+        echo_warn "Failed to install zsh-autosuggestions"
+      fi
+      
+      if git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null; then
+        echo_info "Installed zsh-syntax-highlighting"
+      else
+        echo_warn "Failed to install zsh-syntax-highlighting"
+      fi
+      
+      if chsh -s "$(which zsh)"; then
+        echo_info "Zsh set as default shell (logout/login to activate your new superpowers)"
+      else
+        echo_warn "Failed to set zsh as default shell"
+      fi
+      
+      record_step "Oh My Zsh"
+    else
+      echo_error "Failed to install Oh My Zsh"
+    fi
   else
     echo_info "Oh My Zsh already installed (you're already cool)"
+    record_step "Oh My Zsh"
   fi
-  record_step "Oh My Zsh"
 }
 
 create_projects_dir() {
@@ -450,16 +764,21 @@ create_projects_dir() {
 
 install_archive_tools() {
   echo_info "Installing archive/compression tools (for all those weird file formats)..."
-  brew install p7zip
-  record_step "Archive tools"
+  if brew install p7zip; then
+    record_step "Archive tools"
+  else
+    echo_error "Failed to install archive tools"
+  fi
 }
 
 install_postgresql() {
   echo_info "Installing PostgreSQL (the database that's actually fun to say out loud)..."
-  brew install postgresql
-  brew services start postgresql
-  echo_info "PostgreSQL installed. Run 'brew services start postgresql' to start it."
-  record_step "PostgreSQL"
+  if brew install postgresql && brew services start postgresql; then
+    echo_info "PostgreSQL installed. Run 'brew services start postgresql' to start it."
+    record_step "PostgreSQL"
+  else
+    echo_error "Failed to install PostgreSQL"
+  fi
 }
 
 # Ordered list of prompts and functions
@@ -488,7 +807,6 @@ INSTALL_MENU=(
   "install_gimp_app:Install GIMP (image editor)?"
   "install_inkscape_app:Install Inkscape (vector editor)?"
   "install_obs_app:Install OBS Studio (record/stream)?"
-  "install_davinci_resolve:Install DaVinci Resolve (video editor)?"
   "install_parallels_app:Install Parallels Desktop (for running VMs)?"
   "install_slack_app:Install Slack?"
   "install_discord_app:Install Discord?"
@@ -526,7 +844,7 @@ show_summary() {
   echo_info "Starship prompt: add 'eval \"\$(starship init zsh)\"' to ~/.zshrc"
   echo_info "nvm: add 'source $(brew --prefix nvm)/nvm.sh' to your shell config"
   echo
-  echo_info "Built with ❤️  and caffeine. Enjoy your shiny dev environment!"
+  echo "Built with ❤️ and caffeine. Enjoy your shiny dev environment!"
 }
 
 main() {

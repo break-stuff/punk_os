@@ -250,9 +250,11 @@ install_oh_my_zsh() {
 
 install_essential_dev_tools() {
   echo_info "Installing essential dev tools (the classics that never go out of style)..."
-  sudo apt install -y \
+  if ! sudo apt install -y \
     build-essential git gh curl wget vim neovim htop tmux zsh \
-    gnome-shell-extensions timeshift net-tools ca-certificates gnupg lsb-release
+    gnome-shell-extensions timeshift net-tools ca-certificates gnupg lsb-release; then
+    echo_error "Failed to install essential dev tools"
+  fi
 }
 
 install_restricted_extras() {
@@ -260,8 +262,11 @@ install_restricted_extras() {
   echo_info "This includes: MP3/MP4 codecs, Microsoft fonts, Flash plugin, DVD playback support"
   # Pre-accept EULA (because who actually reads those?)
   echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
-  sudo apt install -y ubuntu-restricted-extras
-  echo_info "Proprietary codecs and drivers installed successfully (you can now play all the things)"
+  if sudo apt install -y ubuntu-restricted-extras; then
+    echo_info "Proprietary codecs and drivers installed successfully (you can now play all the things)"
+  else
+    echo_error "Failed to install restricted extras"
+  fi
 }
 
 tune_inotify() {
@@ -296,20 +301,27 @@ enable_fstrim() {
 
 install_modern_cli_tools() {
   echo_info "Installing modern CLI tools (your grandpa's Unix tools, but faster)..."
-  sudo apt install -y bat ripgrep fd-find tldr
-  mkdir -p ~/.local/bin
-  # Ubuntu names things weirdly, so we fix that
-  ln -sf /usr/bin/batcat ~/.local/bin/bat 2>/dev/null || true
-  ln -sf /usr/bin/fdfind ~/.local/bin/fd 2>/dev/null || true
+  if sudo apt install -y bat ripgrep fd-find tldr; then
+    mkdir -p ~/.local/bin
+    # Ubuntu names things weirdly, so we fix that
+    ln -sf /usr/bin/batcat ~/.local/bin/bat 2>/dev/null || true
+    ln -sf /usr/bin/fdfind ~/.local/bin/fd 2>/dev/null || true
+  else
+    echo_error "Failed to install modern CLI tools"
+  fi
 }
 
 install_developer_utilities() {
   echo_info "Installing developer utilities (the tools you didn't know you needed)..."
-  sudo apt install -y jq tree httpie
+  if ! sudo apt install -y jq tree httpie; then
+    echo_error "Failed to install developer utilities"
+  fi
 }
 
 install_archive_tools() {
-  sudo apt install -y zip unzip p7zip-full p7zip-rar unrar
+  if ! sudo apt install -y zip unzip p7zip-full p7zip-rar unrar; then
+    echo_error "Failed to install archive tools"
+  fi
 }
 
 install_docker() {
@@ -399,26 +411,41 @@ EOF
 install_dev_fonts() {
   echo_info "Installing developer fonts (making your code look pretty since... well, recently)..."
   mkdir -p ~/.local/share/fonts
+  local success=true
+  
   if [ ! -d ~/.local/share/fonts/JetBrainsMono ]; then
     echo_info "Downloading JetBrains Mono (clean and modern)..."
-    wget -O jetbrains.zip https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip
-    unzip -q jetbrains.zip -d ~/.local/share/fonts/JetBrainsMono
-    rm jetbrains.zip
+    if wget -O jetbrains.zip https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip && unzip -q jetbrains.zip -d ~/.local/share/fonts/JetBrainsMono && rm jetbrains.zip; then
+      echo_info "JetBrains Mono installed"
+    else
+      echo_error "Failed to install JetBrains Mono"
+      success=false
+    fi
   fi
+  
   if [ ! -d ~/.local/share/fonts/FiraCode ]; then
     echo_info "Downloading Fira Code (the ligature legend)..."
-    wget -O firacode.zip https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip
-    unzip -q firacode.zip -d ~/.local/share/fonts/FiraCode
-    rm firacode.zip
+    if wget -O firacode.zip https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip && unzip -q firacode.zip -d ~/.local/share/fonts/FiraCode && rm firacode.zip; then
+      echo_info "Fira Code installed"
+    else
+      echo_error "Failed to install Fira Code"
+      success=false
+    fi
   fi
+  
   if [ ! -d ~/.local/share/fonts/CascadiaCode ]; then
     echo_info "Downloading Cascadia Code (Microsoft actually nailed this one)..."
-    wget -O cascadia.zip https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip
-    unzip -q cascadia.zip -d ~/.local/share/fonts/CascadiaCode
-    rm cascadia.zip
+    if wget -O cascadia.zip https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip && unzip -q cascadia.zip -d ~/.local/share/fonts/CascadiaCode && rm cascadia.zip; then
+      echo_info "Cascadia Code installed"
+    else
+      echo_error "Failed to install Cascadia Code"
+      success=false
+    fi
   fi
-  fc-cache -fv
-  echo_info "Fonts installed! Your code will look fancy now ✨"
+  
+  if $success && fc-cache -fv >/dev/null 2>&1; then
+    echo_info "Fonts installed! Your code will look fancy now ✨"
+  fi
 }
 
 create_projects_dir() {
@@ -458,11 +485,16 @@ install_vscode() {
       ;;
   esac
   if ! command -v code >/dev/null 2>&1 && [[ "$GUI_SOURCE" == "apt" ]]; then
-    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-    sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-    echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
-    rm packages.microsoft.gpg
-    sudo apt install -y code
+    echo_info "Installing VS Code via apt..."
+    if wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg &&
+       sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg &&
+       echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list &&
+       rm packages.microsoft.gpg &&
+       sudo apt install -y code; then
+      echo_info "VS Code installed successfully"
+    else
+      echo_error "Failed to install VS Code"
+    fi
   fi
 }
 
@@ -612,9 +644,12 @@ install_pgadmin() {
 
 install_postgresql() {
   echo_info "Installing PostgreSQL (the database that's actually fun to say out loud)..."
-  sudo apt install -y postgresql postgresql-contrib
-  echo_info "PostgreSQL installed (default user: postgres)"
-  install_pgadmin
+  if sudo apt install -y postgresql postgresql-contrib; then
+    echo_info "PostgreSQL installed (default user: postgres)"
+    install_pgadmin
+  else
+    echo_error "Failed to install PostgreSQL"
+  fi
 }
 
 install_obs_studio() {
@@ -660,10 +695,14 @@ install_firefox() {
 install_google_chrome() {
   if ! command -v google-chrome >/dev/null 2>&1 && ! command -v google-chrome-stable >/dev/null 2>&1; then
     echo_info "Installing Google Chrome..."
-    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-    sudo apt update
-    sudo apt install -y google-chrome-stable
+    if wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add - &&
+       echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list &&
+       sudo apt update &&
+       sudo apt install -y google-chrome-stable; then
+      echo_info "Google Chrome installed successfully"
+    else
+      echo_error "Failed to install Google Chrome"
+    fi
   else
     echo_info "Google Chrome already installed"
   fi
