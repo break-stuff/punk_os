@@ -235,6 +235,13 @@ run_selected_installations() {
 }
 
 install_oh_my_zsh() {
+  # Ensure dependencies are installed first
+  if ! command -v curl >/dev/null 2>&1 || ! command -v git >/dev/null 2>&1 || ! command -v zsh >/dev/null 2>&1; then
+    echo_info "Installing Oh My Zsh dependencies (curl, git, zsh)..."
+    sudo apt update -qq
+    sudo apt install -y curl git zsh
+  fi
+  
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo_info "Installing Oh My Zsh (prepare for terminal awesomeness)..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
