@@ -196,7 +196,7 @@ select_installations_menu() {
     echo_warn "fzf not found; skipping fancy interactive menu (sad face)."
     return 1
   fi
-  [[ $FZF_DEFAULT_OPTS == *"--tac"* ]] && echo_warn "Detected --tac in FZF_DEFAULT_OPTS (reverses order). Overriding because we like things our way."
+  [[ -n "${FZF_DEFAULT_OPTS:-}" && $FZF_DEFAULT_OPTS == *"--tac"* ]] && echo_warn "Detected --tac in FZF_DEFAULT_OPTS (reverses order). Overriding because we like things our way."
   echo_info "Launching interactive menu (choose your adventure)..."
   local menu
   FZF_DEFAULT_OPTS='' \
